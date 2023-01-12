@@ -1,1 +1,344 @@
+Assignment 5: Image Processing (Part 2)
+Created by: Nezam Jazayeri and Ben Weiss
 
+Main Purpose: Modification of supported image file types
+
+Note: We created our own images -- no citation needed me.
+
+To Start The Program: Run the "main(String[] args)" method found in the RunFile class in the
+RunProgram.java file located inside of the src folder.
+Client will now be able to type commands in the console.
+
+USABILITY:
+
+***********************************************************************************************
+Prior to modification, user MUST load file from computer into internal storage of program.
+***********************************************************************************************
+
+In order to load file from computer into software storage for modification:
+
+- image must be stored locally on laptop (desktop, downloads, files, etc.)
+- image cannot be stored in cloud (Google Drive, OneDrive, iCloud, email, etc.)
+- image must be of type JPG, BMP, PPM, or PNG
+
+- first type "load"
+- follow with location of image on computer
+- finally, type the desired name of the image for local storage, which can be anything
+
+Example:
+  - "load /Users/benweiss/Desktop/CS3500/Group/Assignment4/res/original.ppm original"
+
+Should project "Loaded onto our storage!" upon successful completion.
+
+This copy will be saved internally for duration of program, even after future modification.
+
+Supported Editing and Viewing Operations:
+
+  Flip Horizontally:
+    - first type "flip-horizontal"
+    - then type local name of imaged desired to be flipped horizontally
+    - finally, type name of new image for local storage
+    - should project "Operation complete." upon successful completion for confirmation of operation.
+    Example:
+      - "flip-horizontal original originalFlipH"
+
+  Flip Vertically:
+    - first type "flip-vertical"
+    - then type local name of image desired to be flipped vertically
+    - finally, type name of new image for local storage
+    - should project "Operation complete." upon successful completion for confirmation of operation.
+      Example:
+      - "flip-vertical original originalFlipV"
+
+  Brighten:
+    - first type "brighten"
+    - then type amount for image to be brightened by
+    - then type local name of image desired to be brightened
+    - finally, type name of new image for local storage
+    - should project "Operation complete." upon successful completion for confirmation of operation.
+    Example:
+      - "brighten 20 original originalBrighten"
+
+  Darken:
+    - first type "darken"'
+    - then type amount for image to be darkened by
+    - then type local name of image desired to be darkened
+    - finally, type name of new image for local storage
+    - should project "Operation complete." upon successful completion for confirmation of operation.
+    Example:
+      - "darken 20 original originalDarken"
+
+  Greyscale by Value:
+    - first type "greyscale-value"
+    - then type local name of image desired to be greyscaled by vale
+    - finally, type name of new image for local storage
+    - should project "Operation complete." upon successful completion for confirmation of operation.
+    Example:
+       - "greyscale-value original originalGreyValue"
+
+  Greyscale by Intensity:
+    - first type "greyscale-intensity"
+    - then type local name of image desired to be greyscaled by intensity
+    - finally, type name of new image for local storage
+    - should project "Operation complete." upon successful completion for confirmation of operation.
+    Example:
+       - "greyscale-intensity original originalGreyIntensity"
+
+  Greyscale by Luma:
+    - first type "greyscale-luma"
+    - then type local name of image desired to be greyscaled by luma
+    - finally, type name of new image for local storage
+    - should project "Operation complete." upon successful completion for confirmation of operation.
+    Example:
+       - "greyscale-luma original originalGreyLuma"
+
+  Greyscale by Red:
+    - first type "greyscale-red"
+    - then type local name of image desired to be greyscaled by red
+    - finally, type name of new image for local storage
+    - should project "Operation complete." upon successful completion for confirmation of operation.
+    Example:
+       - "greyscale-red original originalGreyRed"
+
+  Greyscale by Green:
+    - first type "greyscale-green"
+    - then type local name of image desired to be greyscaled by green
+    - finally, type name of new image for local storage
+    - should project "Operation complete." upon successful completion for confirmation of operation.
+    Example:
+       - "greyscale-green original originalGreyGreen"
+
+  Greyscale by Blue:
+    - first type "greyscale-blue"
+    - then type local name of image desired to be greyscaled by blue
+    - finally, type name of new image for local storage
+    - should project "Operation complete." upon successful completion for confirmation of operation.
+    Example:
+       - "greyscale-blue original originalGreyBlue"
+
+  Display:
+    - first type "display"
+    - then type name of image stored locally
+    - will display width, height, and max value of color in the file
+    - will also display RGB values for each pixel of the image in text, similar to .txt file
+    Example:
+      - "display originalGreyRed"
+
+All modifications are saved, however, they are only saved within the program. To place the images
+elsewhere on their computer, the client must perform a save operation.
+
+In order to save locally stored images:
+  - first type "save"
+  - then typed desired location on computer for image to be saved
+  - without a space, type name of file as you would like it to appear on your computer
+  - finally, type name of image stored locally
+  - should project "Saved to computer!" upon successful completion
+
+  Example:
+    - "save /Users/benweiss/Desktop/darken.ppm originalDarken"
+
+Client can type "done" as stand-alone command to exit the program.
+
+If the client's first command is not detected to be one of the following it will list the possible
+commands
+to the client and ask them to try again:
+1. load
+2. save
+3. flip-vertical
+4. flip-horizontal
+5. greyscale-red
+6. greyscale-green
+7. greyscale-blue
+8. greyscale-value
+9. greyscale-intensity
+10. greyscale-luma
+11. display
+12. done
+
+However, if the client does have one of these commands and then proceeds to type invalid commands,
+the program will throw an exception. We did this because if the client tries to do multiple commands
+at the same time and there is a mistake, we don't want the rest of the
+input to be used for a previous comment (as we are modifying files on the clients computer).
+
+
+DESIGN DECISIONS/STRUCTURING:
+
+
+There was a number of other design decisions made. For example, we have 3 "models". The first being
+a Pixel interface, the next being an Image interface, and the last being a Storage system interface.
+The way this works is that the storage system contains images and images (in our implementation) are
+represented by a set of arrays. This allows for client readability, so they know what every
+structure is and how they are connected.
+
+Because our Image Processing software's goal is not to actually modify images themselves; rather,
+they take images, and make a NEW modified image. For this reason, we made both our Image and Pixel
+immutable.
+
+We also added a builder pattern for pixels. We made this decision because in the case we wanted to
+change all components by a constant, we would have a constructor that took in one integer and
+modified all the fields. There was also a case, though, that we wanted to set all the components
+of a pixel to be the same. This would similarly have a constructor with one integer parameter. For
+these reasons along with other readability, we made a builder pattern. We made our strict PixelImpl
+constructor private to incentivize the use of the builder.
+
+Another decision we made it to disallow exceptions when a R, G, or B component either exceeds its
+maximum value or falls short of 0. Instead, we dealt with this by clamping the inputs. For example,
+if the maximum value of a pixel was 255, and the user set the red component to be 300, it would
+autocorrect to 255. When changing image exposures, you often lose quality when trying to achieve a
+desired outcome, and out implementation allows for that.
+
+Next, our goal was to make our Image interface as generic as possible. Instead of having methods
+like brighten, greyscale, etc... we had one simple transform method (as well as informational
+getters). Because transform is general and should be able to cover any image transformation we
+desire, we used function objects to achieve our desired outcome. We united all function objects
+under an "Operations" interface (which extended Function<Image, Image>). These operations included,
+but were not limited to, Grey-scaling by a red component, flipping an image vertically, and
+changing the exposure of an image. We noticed some similarities between operations like
+grey-scaling and changing exposure. Namely, those operations apply the exact same function to every
+pixel in the image. In order to abstract grey-scaling and brightening and all future "all-pixel"
+operations, we created a PixelOperation interface. This interface represented function objects that
+we apply to pixels themselves. By doing this, we could abstract our image greyscale and brighten
+(and future) operations by similarly looping through all pixels in each one, and simply applying a
+different PixelOperation to each pixel we visit. To express why this is effective, let's look at
+a method we might want to do in the future like finding the compliment of the current color.
+Without touching our image or pixel interfaces, we can create a new Operation (implements
+Operation) that will go to the abstract method that loops through the pixels and apply a certain
+PixelOperation (another easy object we create). This keeps code separated, concise, and readable.
+
+In our storage system, we have a getter that gets the image with a certain tag. We also have an
+"add" method that adds to our storage space with a tag and an Image. Because our storage system
+should be able to accumulate new images, the Map (our way of storing) is mutable and can be added
+to. Our add method replaces whatever tag currently is associated with an Image. This was a simple
+decision we made to allow for updating images at certain tags. We also have a transform method,
+that takes the Operation and transforms an image by its tag and stores the new transformed image at
+the supplied destination tag. It is important to remark "transform" never removes elements from our
+Map (at worst it replaces). This is because we want to have access to as many versions as possible
+in case we want to save an older Image stored.
+
+We also added a command design pattern. Again, this is for readability. There is a set of commands
+and each of these commands should also have a corresponding Operation. This allows for
+communication between the storage model and Image.
+
+By having these three communicate with each other, whenever a programmer wants to add a possible
+transformation, they will add a command for it in the Commands interface, create a Operation for
+it, and optionally, if it is a an operation done to all pixels, they will add the PixelOperation
+as well.
+
+So that the user knows what is going on in the program and they can track what is in the storage
+system, the user can input to the controller to get information about the model insofar as the view
+displaying info to the user. For example, every time the user performs some change, whether
+that be load, brighten, flip, etc.. the user will get feedback specifying the operation that was
+done on the storage system. The view also has a method that gives details for a certain image in
+String form. For example, we can say "renderImageState" for a given image and it might say
+something like:
+
+"Width: n"
+"Height: m"
+"Max Pixel Value: k"
+"Pixel at (0,0) R: a G: b B: c"
+... etc ...
+
+We added this functionality so the user can find details of an image in
+the storage model by its tag.
+
+
+///////////////////////////////////////
+//////// NEW ADDITIONS FOR HW5: ///////
+///////////////////////////////////////
+
+Newly Supported Editing Operations:
+
+  Blur:
+    - first type "blur"
+    - then type local name of image desired to be blurred
+    - finally, type name of new image for local storage
+    - should project "Operation complete." upon successful completion for confirmation of operation.
+    Example:
+       - "blur original originalBlur"
+
+  Sharpen:
+    - first type "sharpen"
+    - then type local name of image desired to be sharpened
+    - finally, type name of new image for local storage
+    - should project "Operation complete." upon successful completion for confirmation of operation.
+    Example:
+       - "sharpen original originalSharp"
+
+  Sepia:
+    - first type "sepia"
+    - then type local name of image desired to have sepia filter applied to
+    - finally, type name of new image for local storage
+    - should project "Operation complete." upon successful completion for confirmation of operation.
+    Example:
+       - "sepia original originalSepia"
+
+  When an invalid command is read it will inform the user of possible commands:
+
+  All previous commands with the additions of
+  - Sepia
+  - Blur
+  - Sharpen
+
+
+  CHANGES:
+
+  We changed our IPixel interface. While we were aware this is not completely in line with solid
+  principles, we did it after trying to respect SOLID principles. We initially creates a
+  BetterPixel interface that extended IPixel and added "getAlpha". We implemented this class
+  with a BetterPixelImpl, and continued this by having our other implementation as composition.
+  Eventually, we realized we would need a new copy of every class we had the first time because
+  we need to change it to have BetterPixel instead of IPixel. This would be a massive hassle, and
+  because it was such a simple, almost irrelevant change, we decided to change the interface. To add
+  on, this wasn't truly a "change". We really only added to the interface and added a method. We
+  thought this minimal change was acceptable and because all other methods were not reliant on
+  this additional method, it would be okay.
+
+  Because we had an Operations interface for all the transformations, we had a really easy time
+  adding the Blur and Sharpen transformation -- no changes needed to be made. We created classes
+  for each transformation, saw overlaps, and abstracted these to one. We also created a
+  class supplementing the Math class with a dot product and matrix * vector operation. Some remarks
+  about these is that we assumed some invariants. For the dot product, we can only dot two vectors
+  in the same space. We assumed that they were because the method calls for dot product occurred
+  only in locations where we were 100% sure the both vectors would be in the same euclidean space.
+  Similarly, matrix multiplication assumed the number of columns in the matrix were of equal size
+  to the dimension of the vector being multiplied for similar reasons. In the future, if we wanted
+  to apply these operations with potentially different sizes, we could make a new class extending
+  this one.
+
+  An offspring of these commands was also changing some of the color transformations. We followed
+  SOLID principles here. We kept all of our color transformation classes, and we just created new
+  classes to do operations such as grey-scaling with a matrix. After we created these new classes
+  and thoroughly tested them, we knew they worked and replaced the old methods. This color
+  transformation method is more versatile and allowed for greater abstraction.
+
+  One thing we didn't do the greatest job with was the lack of interfaces for saving/loading files.
+  We hardcoded one load command and one save command previously. We still comply with SOLID, though,
+  as we left our load and save classes nearly untouched. We only added save and load interfaces and
+  let our current PPM implementations implement the interface. Then we could easily add the rest of
+  the file formats as new classes implementing their respective interface. This made abstraction
+  rather easy as well.
+
+  We also changed our controller minimally. We previously had a switch statement controller that
+  used a command design pattern. We just didn't love the bulkiness of this controller, so we
+  made a controller where we have a map that maps string-based commands to their actual command
+  in the command design. We did in fact comply with SOLID here because we created an entirely new
+  controller implementation that implemented the controller interface. Then, we worked off that
+  to create a new controller. We thoroughly tested this controller until we were confident it works
+  accurately. We then deleted our previous controller because this one was a better, more readable,
+  concise version and we knew it worked.
+
+  Other than these changes, our code was essentially unchanged. We only added classes for new
+  operations and new classes that helped support new file types. Expectedly, we also added cases
+  for when the user types sepia, blur, or sharpen.
+
+UPDATED HW6:
+
+The only things we've changed are adding an interface that goes between files, backend images (for us), and BufferedImages. This allowed for  more versatile saving and loading operations.
+
+This changed our previous classes negligibly.
+
+Some things we added were a histogram interface that had implementing classes whose roles were to turn an Image into a map where each value (1, ..., 255) corresponded to a frequency. This was helpful for developing images of histograms for certain images. 
+
+We also added functionality for GUIS. This resulted in a GUI View interface and implementing class. This view had buttons that, when clicked (user input), would go to the controller and perform some operation on this view. 
+
+To use our GUI program, you can use the command line and run the NewRunFile with command line java -jar cs3500hw6.jar. To use the program in the same way as last assignment, you can simply type java -jar cs3500hw6.jar -text.
