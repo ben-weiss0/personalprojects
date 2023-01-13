@@ -1,0 +1,304 @@
+import org.junit.Test;
+
+import java.io.StringReader;
+
+import imageprocessor.controller.ControllerImpl;
+import imageprocessor.controller.commanddesign.transformations.BlurCommand;
+import imageprocessor.model.IImage;
+import imageprocessor.model.IPixel;
+import imageprocessor.model.ImageImpl;
+import imageprocessor.model.ImageProcessingModel;
+import imageprocessor.model.ModelImpl;
+import imageprocessor.model.operations.Exposure;
+import imageprocessor.model.operations.FlipHorizontal;
+import imageprocessor.model.operations.FlipVertical;
+import imageprocessor.model.operations.GreyscaleBlue;
+import imageprocessor.model.operations.GreyscaleGreen;
+import imageprocessor.model.operations.GreyscaleIntensity;
+import imageprocessor.model.operations.GreyscaleLuma;
+import imageprocessor.model.operations.GreyscaleRed;
+import imageprocessor.model.operations.GreyscaleValue;
+import imageprocessor.model.operations.Operations;
+import imageprocessor.model.operations.Sepia;
+import imageprocessor.model.operations.SimpleBlur;
+import imageprocessor.model.operations.SimpleSharpen;
+import imageprocessor.view.ImageProcessingView;
+import imageprocessor.view.ImageProcessingViewImpl;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+
+/**
+ * Testing the Image.
+ */
+public class ImageModelTest extends PixelModelTest {
+  IImage redImage;
+  IImage greenImage;
+  IImage blueImage;
+  IImage mixedImage;
+  IImage lowerMinPixelImage;
+  Operations brightenExposureObj;
+  Operations darkenExposureObj;
+
+  Operations flipHorizontalObj;
+  Operations flipVerticalObj;
+  Operations greyscaleBlue;
+  Operations greyscaleGreen;
+  Operations greyscaleRed;
+  Operations greyscaleLuma;
+  Operations greyscaleValue;
+  Operations greyscaleIntensity;
+
+  Operations blur;
+  Operations sharpen;
+  Operations sepia;
+
+
+  @Override
+  public void setAll() {
+    super.setAll();
+    redImage = new ImageImpl(new IPixel[][]{
+            {redPixel, redPixel},
+            {redPixel, redPixel},
+            {redPixel, redPixel}});
+    greenImage = new ImageImpl(new IPixel[][]{
+            {greenPixel, greenPixel, greenPixel},
+            {greenPixel, greenPixel, greenPixel}});
+    blueImage = new ImageImpl(new IPixel[][]{
+            {bluePixel, bluePixel},
+            {bluePixel, bluePixel}});
+    lowerMinPixelImage = new ImageImpl(new IPixel[][]{
+            {lowerMinPixel, lowerMinPixel},
+            {lowerMinPixel, lowerMinPixel}});
+    mixedImage = new ImageImpl(new IPixel[][]{
+            {bluePixel, redPixel, yellowPixel},
+            {allSame, randomPixel, clampLower},
+            {clampUpper, incrementAll, greenPixel}});
+
+    brightenExposureObj = new Exposure(20);
+    darkenExposureObj = new Exposure(-20);
+    flipHorizontalObj = new FlipHorizontal();
+    flipVerticalObj = new FlipVertical();
+    greyscaleBlue = new GreyscaleBlue();
+    greyscaleGreen = new GreyscaleGreen();
+    greyscaleRed = new GreyscaleRed();
+    greyscaleLuma = new GreyscaleLuma();
+    greyscaleValue = new GreyscaleValue();
+    greyscaleIntensity = new GreyscaleIntensity();
+    blur = new SimpleBlur();
+    sharpen = new SimpleSharpen();
+    sepia = new Sepia();
+  }
+
+  @Test
+  public void testConstructorFailure() {
+    try {
+      IImage image = new ImageImpl(null);
+      fail("Should throw exception");
+    } catch (IllegalArgumentException e) {
+      assertEquals("2D array of pixels cannot be null.", e.getMessage());
+    }
+    try {
+      IImage image = new ImageImpl(new IPixel[][]{
+              {bluePixel, redPixel, yellowPixel},
+              {allSame, randomPixel, lowerMinPixel},
+              {clampUpper, incrementAll, greenPixel}});
+      fail("Shouldn't be able to construct");
+    }
+    catch (IllegalArgumentException e) {
+      assertEquals("All pixels must have same max value", e.getMessage());
+    }
+  }
+
+  @Test
+  public void testMax() {
+    assertEquals(255, redImage.getMaxValue());
+    assertEquals(255, greenImage.getMaxValue());
+    assertEquals(255, blueImage.getMaxValue());
+    assertEquals(255, mixedImage.getMaxValue());
+    assertEquals(64, lowerMinPixelImage.getMaxValue());
+
+  }
+
+  @Test
+  public void testConstructorAndGetPixelAtSuccess() {
+    checkPixel(mixedImage.getPixelAt(0, 1), 255, 0, 0, 255);
+    checkPixel(mixedImage.getPixelAt(2, 2), 0, 255, 0, 255);
+    checkPixel(mixedImage.getPixelAt(0, 0), 0, 0, 255, 255);
+    checkPixel(mixedImage.getPixelAt(0, 2), 255, 255, 0, 255);
+    checkPixel(mixedImage.getPixelAt(1, 1), 187, 75, 230, 255);
+    checkPixel(mixedImage.getPixelAt(2, 0), 255, 20, 20, 255);
+    checkPixel(mixedImage.getPixelAt(1, 2), 0, 20, 20, 255);
+    checkPixel(mixedImage.getPixelAt(1, 0), 252, 252, 252, 255);
+    checkPixel(mixedImage.getPixelAt(2, 1), 177, 65, 220, 255);
+    assertEquals(3, mixedImage.getRows());
+  }
+
+  @Test
+  public void testGetRows() {
+    assertEquals(3, mixedImage.getRows());
+    assertEquals(2, blueImage.getRows());
+    assertEquals(2, greenImage.getRows());
+    assertEquals(3, redImage.getRows());
+  }
+
+  @Test
+  public void testGetColumns() {
+    assertEquals(3, mixedImage.getColumns());
+    assertEquals(2, blueImage.getColumns());
+    assertEquals(3, greenImage.getColumns());
+    assertEquals(2, redImage.getColumns());
+  }
+
+  @Test
+  public void testTransformBrighten() {
+    IImage brightenedImage = mixedImage.transform(brightenExposureObj);
+    checkPixel(brightenedImage.getPixelAt(0, 1), 255, 20, 20, 255);
+    checkPixel(brightenedImage.getPixelAt(2, 2), 20, 255, 20, 255);
+    checkPixel(brightenedImage.getPixelAt(0, 0), 20, 20, 255, 255);
+    checkPixel(brightenedImage.getPixelAt(0, 2), 255, 255, 20, 255);
+    checkPixel(brightenedImage.getPixelAt(1, 1), 207, 95, 250, 255);
+    checkPixel(brightenedImage.getPixelAt(2, 0), 255, 40, 40, 255);
+    checkPixel(brightenedImage.getPixelAt(1, 2), 20, 40, 40, 255);
+    checkPixel(brightenedImage.getPixelAt(1, 0), 255, 255, 255, 255);
+    checkPixel(brightenedImage.getPixelAt(2, 1), 197, 85, 240, 255);
+    assertEquals(3, mixedImage.getRows());
+  }
+
+  @Test
+  public void testTransformDarken() {
+    IImage darkenedImage = mixedImage.transform(darkenExposureObj);
+    checkPixel(darkenedImage.getPixelAt(0, 1), 235, 0, 0, 255);
+    checkPixel(darkenedImage.getPixelAt(2, 2), 0, 235, 0, 255);
+    checkPixel(darkenedImage.getPixelAt(0, 0), 0, 0, 235, 255);
+    checkPixel(darkenedImage.getPixelAt(0, 2), 235, 235, 0, 255);
+    checkPixel(darkenedImage.getPixelAt(1, 1), 167, 55, 210, 255);
+    checkPixel(darkenedImage.getPixelAt(2, 0), 235, 0, 0, 255);
+    checkPixel(darkenedImage.getPixelAt(1, 2), 0, 0, 0, 255);
+    checkPixel(darkenedImage.getPixelAt(1, 0), 232, 232, 232, 255);
+    checkPixel(darkenedImage.getPixelAt(2, 1), 157, 45, 200, 255);
+    assertEquals(3, mixedImage.getRows());
+  }
+
+  @Test
+  public void testTransformFlipHorizontal() {
+    IImage flippedImage = mixedImage.transform(flipHorizontalObj);
+    checkPixel(flippedImage.getPixelAt(0, 1), 255, 0, 0, 255);
+    checkPixel(flippedImage.getPixelAt(2, 2), 255, 20, 20, 255);
+    checkPixel(flippedImage.getPixelAt(0, 0), 255, 255, 0, 255);
+    checkPixel(flippedImage.getPixelAt(0, 2), 0, 0, 255, 255);
+    checkPixel(flippedImage.getPixelAt(1, 1), 187, 75, 230, 255);
+    checkPixel(flippedImage.getPixelAt(2, 0), 0, 255, 0, 255);
+    checkPixel(flippedImage.getPixelAt(1, 2), 252, 252, 252, 255);
+    checkPixel(flippedImage.getPixelAt(1, 0), 0, 20, 20, 255);
+    checkPixel(flippedImage.getPixelAt(2, 1), 177, 65, 220, 255);
+    assertEquals(3, mixedImage.getRows());
+  }
+
+  @Test
+  public void testTransformFlipVertical() {
+    IImage flippedImage = mixedImage.transform(flipVerticalObj);
+    checkPixel(flippedImage.getPixelAt(0, 1), 177, 65, 220, 255);
+    checkPixel(flippedImage.getPixelAt(2, 2), 255, 255, 0, 255);
+    checkPixel(flippedImage.getPixelAt(0, 0), 255, 20, 20, 255);
+    checkPixel(flippedImage.getPixelAt(0, 2), 0, 255, 0, 255);
+    checkPixel(flippedImage.getPixelAt(1, 1), 187, 75, 230, 255);
+    checkPixel(flippedImage.getPixelAt(2, 0), 0, 0, 255, 255);
+    checkPixel(flippedImage.getPixelAt(1, 2), 0, 20, 20, 255);
+    checkPixel(flippedImage.getPixelAt(1, 0), 252, 252, 252, 255);
+    checkPixel(flippedImage.getPixelAt(2, 1), 255, 0, 0, 255);
+    assertEquals(3, mixedImage.getRows());
+  }
+
+  @Test
+  public void testGreyscaleRed() {
+    IImage greyedImage = mixedImage.transform(greyscaleRed);
+    checkPixel(greyedImage.getPixelAt(0, 1), 255, 255, 255, 255);
+    checkPixel(greyedImage.getPixelAt(2, 2), 0, 0, 0, 255);
+    checkPixel(greyedImage.getPixelAt(0, 0), 0, 0, 0, 255);
+    checkPixel(greyedImage.getPixelAt(0, 2), 255, 255, 255, 255);
+    checkPixel(greyedImage.getPixelAt(1, 1), 187, 187, 187, 255);
+    checkPixel(greyedImage.getPixelAt(2, 0), 255, 255, 255, 255);
+    checkPixel(greyedImage.getPixelAt(1, 2), 0, 0, 0, 255);
+    checkPixel(greyedImage.getPixelAt(1, 0), 252, 252, 252, 255);
+    checkPixel(greyedImage.getPixelAt(2, 1), 177, 177, 177, 255);
+    assertEquals(3, mixedImage.getRows());
+  }
+
+  @Test
+  public void testGreyscaleGreen() {
+    IImage greyedImage = mixedImage.transform(greyscaleGreen);
+    checkPixel(greyedImage.getPixelAt(0, 1), 0, 0, 0, 255);
+    checkPixel(greyedImage.getPixelAt(2, 2), 255, 255, 255, 255);
+    checkPixel(greyedImage.getPixelAt(0, 0), 0, 0, 0, 255);
+    checkPixel(greyedImage.getPixelAt(0, 2), 255, 255, 255, 255);
+    checkPixel(greyedImage.getPixelAt(1, 1), 75, 75, 75, 255);
+    checkPixel(greyedImage.getPixelAt(2, 0), 20, 20, 20, 255);
+    checkPixel(greyedImage.getPixelAt(1, 2), 20, 20, 20, 255);
+    checkPixel(greyedImage.getPixelAt(1, 0), 252, 252, 252, 255);
+    checkPixel(greyedImage.getPixelAt(2, 1), 65, 65, 65, 255);
+    assertEquals(3, mixedImage.getRows());
+  }
+
+  @Test
+  public void testGreyscaleBlue() {
+    IImage greyedImage = mixedImage.transform(greyscaleBlue);
+    checkPixel(greyedImage.getPixelAt(0, 1), 0, 0, 0, 255);
+    checkPixel(greyedImage.getPixelAt(2, 2), 0, 0, 0, 255);
+    checkPixel(greyedImage.getPixelAt(0, 0), 255, 255, 255, 255);
+    checkPixel(greyedImage.getPixelAt(0, 2), 0, 0, 0, 255);
+    checkPixel(greyedImage.getPixelAt(1, 1), 230, 230, 230, 255);
+    checkPixel(greyedImage.getPixelAt(2, 0), 20, 20, 20, 255);
+    checkPixel(greyedImage.getPixelAt(1, 2), 20, 20, 20, 255);
+    checkPixel(greyedImage.getPixelAt(1, 0), 252, 252, 252, 255);
+    checkPixel(greyedImage.getPixelAt(2, 1), 220, 220, 220, 255);
+    assertEquals(3, mixedImage.getRows());
+  }
+
+  @Test
+  public void testGreyscaleValue() {
+    IImage greyedImage = mixedImage.transform(greyscaleValue);
+    checkPixel(greyedImage.getPixelAt(0, 1), 255, 255, 255, 255);
+    checkPixel(greyedImage.getPixelAt(2, 2), 255, 255, 255, 255);
+    checkPixel(greyedImage.getPixelAt(0, 0), 255, 255, 255, 255);
+    checkPixel(greyedImage.getPixelAt(0, 2), 255, 255, 255, 255);
+    checkPixel(greyedImage.getPixelAt(1, 1), 230, 230, 230, 255);
+    checkPixel(greyedImage.getPixelAt(2, 0), 255, 255, 255, 255);
+    checkPixel(greyedImage.getPixelAt(1, 2), 20, 20, 20, 255);
+    checkPixel(greyedImage.getPixelAt(1, 0), 252, 252, 252, 255);
+    checkPixel(greyedImage.getPixelAt(2, 1), 220, 220, 220, 255);
+    assertEquals(3, mixedImage.getRows());
+  }
+
+  @Test
+  public void testGreyscaleIntensity() {
+    IImage greyedImage = mixedImage.transform(greyscaleIntensity);
+    checkPixel(greyedImage.getPixelAt(0, 1), 85, 85, 85, 255);
+    checkPixel(greyedImage.getPixelAt(2, 2), 85, 85, 85, 255);
+    checkPixel(greyedImage.getPixelAt(0, 0), 85, 85, 85, 255);
+    checkPixel(greyedImage.getPixelAt(0, 2), 170, 170, 170, 255);
+    checkPixel(greyedImage.getPixelAt(1, 1), 164, 164, 164, 255);
+    checkPixel(greyedImage.getPixelAt(2, 0), 98, 98, 98, 255);
+    checkPixel(greyedImage.getPixelAt(1, 2), 13, 13, 13, 255);
+    checkPixel(greyedImage.getPixelAt(1, 0), 252, 252, 252, 255);
+    checkPixel(greyedImage.getPixelAt(2, 1), 154, 154, 154, 255);
+    assertEquals(3, mixedImage.getRows());
+  }
+
+  @Test
+  public void testGreyscaleLuma() {
+    IImage greyedImage = mixedImage.transform(greyscaleLuma);
+    checkPixel(greyedImage.getPixelAt(0, 1), 54, 54, 54, 255);
+    checkPixel(greyedImage.getPixelAt(2, 2), 182, 182, 182, 255);
+    checkPixel(greyedImage.getPixelAt(0, 0), 18, 18, 18, 255);
+    checkPixel(greyedImage.getPixelAt(0, 2), 237, 237, 237, 255);
+    checkPixel(greyedImage.getPixelAt(1, 1), 110, 110, 110, 255);
+    checkPixel(greyedImage.getPixelAt(2, 0), 70, 70, 70, 255);
+    checkPixel(greyedImage.getPixelAt(1, 2), 16, 16, 16, 255);
+    checkPixel(greyedImage.getPixelAt(1, 0), 252, 252, 252, 255);
+    checkPixel(greyedImage.getPixelAt(2, 1), 100, 100, 100, 255);
+    assertEquals(3, mixedImage.getRows());
+  }
+}
+
+
