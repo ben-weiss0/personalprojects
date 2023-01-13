@@ -1,0 +1,23 @@
+package imageprocessor.controller.listeners;
+
+import imageprocessor.model.operations.GreyscaleBlue;
+import imageprocessor.model.operations.Operations;
+import imageprocessor.view.ViewForGUI;
+
+/**
+ * Action listener for blue greyscale button.
+ */
+public class GreyScaleBlueActionListener extends AbstractTransformationListener {
+    /**
+     * Constructor.
+     * @param board the working view.
+     */
+    public GreyScaleBlueActionListener(ViewForGUI board) {
+        super(board);
+    }
+
+    @Override
+    protected Operations getCommand() {
+        return new GreyscaleBlue();
+    }
+}
