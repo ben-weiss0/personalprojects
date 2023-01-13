@@ -1,0 +1,95 @@
+package imageprocessor.controller.commanddesign.filemanipulation.fileconversion;
+
+import imageprocessor.model.IImage;
+import imageprocessor.model.IPixel;
+import imageprocessor.model.ImageImpl;
+import imageprocessor.model.PixelImpl;
+
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.util.Scanner;
+
+/**
+ * Conversion between JPG files, buffered images, and IImages.
+ */
+public class PPMFileConversion extends AbstractFileConversion {
+    @Override
+    public BufferedImage fileToBufferedImage(String fileName) {
+        return super.iImageToBufferedImage(this.fileToIImage(fileName));
+    }
+
+    @Override
+    public IImage fileToIImage(String fileName) {
+        String s = PPMToString(fileName);
+        IPixel[][] pixels = toPixelsPPM(s);
+        IImage image = new ImageImpl(pixels);
+        return image;
+    }
+
+    // Won't be called
+
+    @Override
+    public IImage bufferedToIImage(BufferedImage img) {
+        return null;
+    }
+
+    @Override
+    public BufferedImage iImageToBufferedImage(IImage iimage) {
+        return null;
+    }
+
+    @Override
+    protected int getType() {
+        return 0;
+    }
+
+    private static IPixel[][] toPixelsPPM(String chars) {
+        Scanner sc = new Scanner(chars);
+        String token = sc.next();
+
+        if (!token.equals("P3")) {
+            throw new IllegalStateException("Not a PPM file");
+        }
+
+        int columns = sc.nextInt();
+        int rows = sc.nextInt();
+        int maxValue = sc.nextInt();
+
+        IPixel[][] pixels = new IPixel[rows][columns];
+
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < columns; j++) {
+                IPixel pixel = new PixelImpl.PixelBuilder()
+                        .maxValue(maxValue)
+                        .red(sc.nextInt())
+                        .green(sc.nextInt())
+                        .blue(sc.nextInt())
+                        .build();
+                pixels[i][j] = pixel;
+            }
+        }
+        return pixels;
+    }
+
+    // Turns a PPM into a String
+    private static String PPMToString(String fileName) {
+        Scanner scanner;
+
+        try {
+            scanner = new Scanner(new FileInputStream(fileName));
+        } catch (FileNotFoundException e) {
+            throw new IllegalStateException("Such file DNE in this database");
+        }
+        StringBuilder builder = new StringBuilder();
+        //read the file line by line, and populate a string. This will throw away any comment lines
+        while (scanner.hasNextLine()) {
+            String s = scanner.nextLine();
+            if (s.charAt(0) != '#') {
+                builder.append(s + System.lineSeparator());
+            }
+        }
+        return builder.toString();
+    }
+}
