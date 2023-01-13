@@ -1,0 +1,33 @@
+package imageprocessor.controller.commanddesign.transformations;
+
+import java.util.Scanner;
+
+import imageprocessor.model.ImageProcessingModel;
+import imageprocessor.model.operations.Sepia;
+
+/**
+ * Represents a {@code SepiaCommand} that transforms and image to look like it was shot many
+ * decades ago.
+ */
+public class SepiaCommand extends AbstractTransformCommand {
+
+  /**
+   * Constructor for a {@code SepiaCommand} that takes in a Scanner.
+   * @param sc a Scanner
+   * @throws IllegalStateException when Readable has no more elements to read from
+   */
+  public SepiaCommand(Scanner sc) throws IllegalStateException {
+    super(sc);
+  }
+
+  /**
+   * Applies transformation to the image
+   * @param model our storage system of all images. Each object will be able to access different
+   *              images inside the model and use them to manipulate the model.
+   */
+  @Override
+  public void apply(ImageProcessingModel model) {
+    super.apply(model);
+    model.transform(new Sepia(), src, dest);
+  }
+}
