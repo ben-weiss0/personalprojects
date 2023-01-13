@@ -1,0 +1,18 @@
+package imageprocessor.controller.commanddesign;
+
+import imageprocessor.model.ImageProcessingModel;
+
+
+/**
+ * Represents an interface for function objects that complete commands provided by the user.
+ */
+public interface Commands {
+
+  /**
+   * Each object is a function object that has a specific role which can be simplified to performing
+   * an operation on the model. The apply method will call that object's role.
+   * @param model our storage system of all images. Each object will be able to access different
+   *              images inside the model and use them to manipulate the model.
+   */
+  void apply(ImageProcessingModel model);
+}
