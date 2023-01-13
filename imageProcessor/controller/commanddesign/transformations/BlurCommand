@@ -1,0 +1,31 @@
+package imageprocessor.controller.commanddesign.transformations;
+
+import java.util.Scanner;
+
+import imageprocessor.model.ImageProcessingModel;
+import imageprocessor.model.operations.SimpleBlur;
+
+/**
+ * Represents a {@code BlurCommand}, which gives client ability to blur an image.
+ */
+public class BlurCommand extends AbstractTransformCommand {
+
+  /**
+   * Constructor for a {@code BlurCommand} that takes in a Scanner.
+   * @param sc a Scanner.
+   */
+  public BlurCommand(Scanner sc) {
+    super(sc);
+  }
+
+  /**
+   * Applies transformation to the image
+   * @param model our storage system of all images. Each object will be able to access different
+   *              images inside the model and use them to manipulate the model.
+   */
+  @Override
+  public void apply(ImageProcessingModel model) {
+    super.apply(model);
+    model.transform(new SimpleBlur(), src, dest);
+  }
+}
