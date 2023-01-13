@@ -1,0 +1,24 @@
+package imageprocessor.controller.listeners;
+
+import imageprocessor.model.operations.Exposure;
+import imageprocessor.model.operations.Operations;
+import imageprocessor.view.ViewForGUI;
+
+/**
+ * Action listener for darken button.
+ */
+public class DarkenActionListener extends ExposureListener {
+    /**
+     * Constructor.
+     * @param board the working view.
+     */
+    public DarkenActionListener(ViewForGUI board) {
+        super(board);
+    }
+
+    @Override
+    protected Operations getCommand() {
+        return new Exposure(-1 * amount);
+    }
+
+}
