@@ -1,0 +1,27 @@
+package imageprocessor.controller.listeners;
+
+import imageprocessor.model.operations.Exposure;
+import imageprocessor.model.operations.Operations;
+import imageprocessor.view.ViewForGUI;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+
+/**
+ * Action listener for brighten button.
+ */
+public class BrightenActionListener extends ExposureListener {
+    /**
+     * Constructor.
+     * @param board the working view.
+     */
+    public BrightenActionListener(ViewForGUI board) {
+        super(board);
+    }
+
+    @Override
+    protected Operations getCommand() {
+        return new Exposure(amount);
+    }
+}
