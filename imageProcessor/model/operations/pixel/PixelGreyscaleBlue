@@ -1,0 +1,14 @@
+package imageprocessor.model.operations.pixel;
+
+import imageprocessor.model.IPixel;
+
+/**
+ * Pixel function object to greyscale by blue component.
+ */
+public class PixelGreyscaleBlue extends PixelTransform {
+
+  @Override
+  protected double[][] getTransformationMatrix(IPixel pixel) {
+    return new double[][] { {0, 0, 1}, {0, 0, 1}, {0, 0, 1} };
+  }
+}
