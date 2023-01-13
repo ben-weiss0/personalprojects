@@ -1,0 +1,31 @@
+package imageprocessor.controller.commanddesign.transformations;
+
+import java.util.Scanner;
+
+import imageprocessor.model.ImageProcessingModel;
+import imageprocessor.model.operations.SimpleSharpen;
+
+/**
+ * Represents a {@code SharpenCommand}, which has abilities to sharpen an image.
+ */
+public class SharpenCommand extends AbstractTransformCommand {
+
+  /**
+   * Constructor for a {@code SharpenCommand} that takes in a Scanner.
+   * @param sc a Scanner
+   */
+  public SharpenCommand(Scanner sc) {
+    super(sc);
+  }
+
+  /**
+   * Applies transformation to the image
+   * @param model our storage system of all images. Each object will be able to access different
+   *              images inside the model and use them to manipulate the model.
+   */
+  @Override
+  public void apply(ImageProcessingModel model) {
+    super.apply(model);
+    model.transform(new SimpleSharpen(), src, dest);
+  }
+}
