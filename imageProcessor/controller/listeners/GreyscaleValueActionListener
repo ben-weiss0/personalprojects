@@ -1,0 +1,22 @@
+package imageprocessor.controller.listeners;
+
+import imageprocessor.model.operations.GreyscaleValue;
+import imageprocessor.model.operations.Operations;
+import imageprocessor.view.ViewForGUI;
+/**
+ * Action listener for value greyscale button.
+ */
+public class GreyScaleValueActionListener extends AbstractTransformationListener {
+    /**
+     * Constructor.
+     * @param board the working view.
+     */
+    public GreyScaleValueActionListener(ViewForGUI board) {
+        super(board);
+    }
+
+    @Override
+    protected Operations getCommand() {
+        return new GreyscaleValue();
+    }
+}
