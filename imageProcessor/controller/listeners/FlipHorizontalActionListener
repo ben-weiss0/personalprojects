@@ -1,0 +1,25 @@
+package imageprocessor.controller.listeners;
+
+import imageprocessor.model.operations.FlipHorizontal;
+import imageprocessor.model.operations.Operations;
+import imageprocessor.view.ViewForGUI;
+
+/**
+ * Action listener for horizontal flip button.
+ */
+public class FlipHorizontalActionListener extends AbstractTransformationListener {
+
+    /**
+     * Constructor.
+     * @param board the working view.
+     */
+    public FlipHorizontalActionListener(ViewForGUI board) {
+        super(board);
+    }
+
+    @Override
+    protected Operations getCommand() {
+        return new FlipHorizontal();
+    }
+
+}
