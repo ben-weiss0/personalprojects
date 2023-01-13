@@ -1,0 +1,40 @@
+package imageprocessor.controller.commanddesign.filemanipulation.loadfiletypes;
+
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+
+import javax.imageio.ImageIO;
+
+import imageprocessor.controller.commanddesign.filemanipulation.fileconversion.BMPFileConversion;
+import imageprocessor.controller.commanddesign.filemanipulation.fileconversion.FileImageConversion;
+import imageprocessor.model.IImage;
+import imageprocessor.model.IPixel;
+import imageprocessor.model.ImageImpl;
+import imageprocessor.model.ImageProcessingModel;
+import imageprocessor.model.PixelImpl;
+
+/**
+ * Represents an {@code AbstractLoad} with a file and a reference, which allows for the client to
+ * load supported file types directly into the model from their own computer.
+ */
+public abstract class  AbstractLoad implements FileLoad {
+  protected String file;
+  protected String reference;
+
+  protected AbstractLoad(String file, String reference) {
+    this.file = file;
+    this.reference = reference;
+  }
+
+  @Override
+  public void apply(ImageProcessingModel model) {
+    FileImageConversion f = getConverter();
+    IImage image = f.fileToIImage(file);
+    model.add(reference, image);
+  }
+
+  protected abstract FileImageConversion getConverter();
+}
