@@ -1,0 +1,22 @@
+package imageprocessor.model.operations;
+
+import imageprocessor.model.IImage;
+import imageprocessor.model.IPixel;
+import imageprocessor.model.ImageImpl;
+
+/**
+ * Vertical flip function object.
+ */
+public class FlipVertical implements Operations {
+
+  @Override
+  public IImage apply(IImage image) {
+    IPixel[][] newImage = new IPixel[image.getRows()][image.getColumns()];
+    for (int row = 0; row < image.getRows(); row++) {
+      for (int col = 0; col < image.getColumns(); col++) {
+        newImage[image.getRows() - row - 1][col] = image.getPixelAt(row, col);
+      }
+    }
+    return new ImageImpl(newImage);
+  }
+}
