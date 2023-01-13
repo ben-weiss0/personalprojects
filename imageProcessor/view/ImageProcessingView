@@ -1,0 +1,27 @@
+package imageprocessor.view;
+
+import java.io.IOException;
+
+/**
+ * Represents a view object in our Image Processing program. Because we are not truly
+ * displaying the images to the user, this is primarily used if the user would like to
+ * learn about the pixels in an image in a string form.
+ */
+public interface ImageProcessingView {
+
+  /**
+   * Renders the image as a string int the following format: First it states the width
+   * and height of the program. Next, it states the maximum value for a pixel for the program.
+   * Then, for each pixel, it states the row and column and its red, green, and blue components.
+   * @param reference the reference to the Image in our storage model.
+   * @throws IOException when the appendable is corrupt/can't be appended to.
+   */
+  void renderImageState(String reference) throws IOException;
+
+  /**
+   * Adds a message on the appendable.
+   * @param s the message we plan to render.
+   * @throws IOException when the appendable is corrupt/can't be appended to.
+   */
+  void renderMessage(String s) throws IOException;
+}
