@@ -1,0 +1,15 @@
+package imageprocessor.view.histograms;
+
+import imageprocessor.model.operations.GreyscaleBlue;
+import imageprocessor.model.operations.GreyscaleGreen;
+import imageprocessor.model.operations.Operations;
+
+/**
+ * Represents the blue histogram for an image.
+ */
+public class BlueHistogram extends AbstractHistogram {
+  @Override
+  protected Operations selectGreyScale() {
+    return new GreyscaleBlue();
+  }
+}
