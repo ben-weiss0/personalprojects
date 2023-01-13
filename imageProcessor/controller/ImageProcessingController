@@ -1,0 +1,15 @@
+package imageprocessor.controller;
+
+/**
+ * Our representation of a controller that takes user inputs, and manipulates the
+ * image storage system as well as displays information to the user.
+ */
+public interface ImageProcessingController {
+
+  /**
+   * This method simply initiates the program. After calling this method,
+   * the user can input commands placed on a readable and the program will use
+   * those readable commands to perform certain operations.
+   */
+  void start();
+}
