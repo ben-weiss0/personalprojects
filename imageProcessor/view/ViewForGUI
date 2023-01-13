@@ -1,0 +1,49 @@
+package imageprocessor.view;
+
+import java.awt.*;
+import java.awt.image.BufferedImage;
+
+import imageprocessor.model.IImage;
+
+import javax.swing.*;
+
+/**
+ * Represents a view for GUI-like views.
+ */
+public interface ViewForGUI {
+
+  /**
+   * Sets the text for a provided label.
+   * @param text the text that will be replacing the previous text.
+   * @param label the label that we are changing.
+   */
+  void setLabelText(String text, JLabel label);
+
+  /**
+   * Gets the text for a provided label.
+   * @param label the label we are checking the text of.
+   * @return the text living in the provided label.
+   */
+  String getLabelText(JLabel label);
+
+  /**
+   * Gets the main image. We choose to display this image as a PNG because it allows for fast modification
+   * and we do not have to ever type-check or run dynamic dispatch. At compile time, if the client would like
+   * to save in a different format, this code allows for that functionality.
+   * @return the buffered image.
+   */
+  BufferedImage getImage();
+
+  /**
+   * After an operation is complete, it refreshes everything on the board. For example, the image and histogram
+   * @param image
+   */
+  void refresh(BufferedImage image);
+
+  /**
+   * Adds a message popup to the GUI.
+   * @param text the text in the popup
+   * @param messageType the popup type (ex. Plain, warning, etc...)
+   */
+  void addMessage(String text, int messageType);
+}
