@@ -1,0 +1,15 @@
+package imageprocessor.model.operations;
+
+public class SimpleSharpen extends AbstractFilter {
+
+  @Override
+  protected double[] generateKernel() {
+    double[] simpleKernel = new double[]{
+            -0.125, -0.125, -0.125, -0.125, -0.125,
+            -0.125, 0.25, 0.25, 0.25, -0.125,
+            -0.125, 0.25, 1.0, 0.25, -0.125,
+            -0.125, 0.25, 0.25, 0.25, -0.125,
+            -0.125, -0.125, -0.125, -0.125, -0.125};
+    return simpleKernel;
+  }
+}
