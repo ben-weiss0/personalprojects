@@ -1,0 +1,12 @@
+package imageprocessor.model.operations.pixel;
+
+import java.util.function.Function;
+
+import imageprocessor.model.IPixel;
+
+/**
+ * A set of function objects that we can apply to pixels.
+ */
+public interface PixelOperations extends Function<IPixel, IPixel> {
+
+}
