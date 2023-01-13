@@ -1,0 +1,23 @@
+package imageprocessor.controller.listeners;
+
+import imageprocessor.model.operations.GreyscaleRed;
+import imageprocessor.model.operations.Operations;
+import imageprocessor.view.ViewForGUI;
+
+/**
+ * Action listener for red greyscale button.
+ */
+public class GreyScaleRedActionListener extends AbstractTransformationListener {
+    /**
+     * Constructor.
+     * @param board the working view.
+     */
+    public GreyScaleRedActionListener(ViewForGUI board) {
+        super(board);
+    }
+
+    @Override
+    protected Operations getCommand() {
+        return new GreyscaleRed();
+    }
+}
