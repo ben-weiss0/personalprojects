@@ -1,0 +1,152 @@
+package imageprocessor.controller;
+
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Scanner;
+
+import imageprocessor.controller.commanddesign.Commands;
+import imageprocessor.controller.commanddesign.filemanipulation.DisplayByStringCommand;
+import imageprocessor.controller.commanddesign.filemanipulation.LoadCommand;
+import imageprocessor.controller.commanddesign.filemanipulation.SaveCommand;
+import imageprocessor.controller.commanddesign.transformations.BlurCommand;
+import imageprocessor.controller.commanddesign.transformations.BrightenCommand;
+import imageprocessor.controller.commanddesign.transformations.DarkenCommand;
+import imageprocessor.controller.commanddesign.transformations.FlipHorizontalCommand;
+import imageprocessor.controller.commanddesign.transformations.FlipVerticalCommand;
+import imageprocessor.controller.commanddesign.transformations.GreyscaleBlueCommand;
+import imageprocessor.controller.commanddesign.transformations.GreyscaleGreenCommand;
+import imageprocessor.controller.commanddesign.transformations.GreyscaleIntensityCommand;
+import imageprocessor.controller.commanddesign.transformations.GreyscaleLumaCommand;
+import imageprocessor.controller.commanddesign.transformations.GreyscaleRedCommand;
+import imageprocessor.controller.commanddesign.transformations.GreyscaleValueCommand;
+import imageprocessor.controller.commanddesign.transformations.SepiaCommand;
+import imageprocessor.controller.commanddesign.transformations.SharpenCommand;
+import imageprocessor.model.ImageProcessingModel;
+import imageprocessor.view.ImageProcessingView;
+
+/**
+ * An implementation of the controller where it can accept a certain set of commands from the user:
+ * 1. Load
+ * 2. Save
+ * 3. Flip Horizontally
+ * 4. Flip Vertically
+ * 5. Greyscale by red component
+ * 6. Greyscale by green component
+ * 7. Greyscale by blue component
+ * 8. Greyscale by value
+ * 9. Greyscale by intensity
+ * 10. Greyscale by luma
+ * 11. Brighten
+ * 12. Darken
+ * 13. Blur
+ * 14. Sharpen
+ * 15. Sepia
+ * Specifications for how to use each of these are in the README
+ */
+public class ControllerImpl implements ImageProcessingController {
+  private static String SUPPORTED;
+  private ImageProcessingModel model;
+  private ImageProcessingView view;
+  private Readable r;
+
+  /**
+   * Constructor. SUPPORTED is a string that shows the supported commands.
+   *
+   * @param model the storage system of images we are working with.
+   * @param view  the view object we are working with to potentially display messages to the user.
+   * @param r     the readable we get our commands from.
+   */
+  public ControllerImpl(ImageProcessingModel model, ImageProcessingView view, Readable r) {
+    if (model == null || view == null || r == null) {
+      throw new IllegalArgumentException("Model, View, and Readable must be non-null");
+    }
+    this.model = model;
+    this.view = view;
+    this.r = r;
+
+    StringBuilder supportedOperations = new StringBuilder();
+    supportedOperations.append("1. Loading a file into program: 'load filePath localReference'\n");
+    supportedOperations.append("2. Saving to computer: 'save fileDesination localReference'\n");
+    supportedOperations.append("3. Vertically flipping a local image and storing as a new image:" +
+            " 'flip-vertical localReferenceFrom localReferenceTo'\n");
+    supportedOperations.append("4. Horizontally flipping a local image and storing as a new image:"
+            + " 'flip-horizontal localReferenceFrom localReferenceTo'\n");
+    supportedOperations.append("5. Greyscaling by red component a local image and storing it " +
+            "as a new image:'greyscale-red localReferenceFrom localReferenceTo'\n");
+    supportedOperations.append("6. Greyscaling by red component a local image and storing it " +
+            "as a new image:'greyscale-red localReferenceFrom localReferenceTo'\n");
+    supportedOperations.append("7. Greyscaling by green component a local image and storing it" +
+            " as a new image:'greyscale-red localReferenceFrom localReferenceTo'\n");
+    supportedOperations.append("8. Greyscaling by blue component a local image and storing it " +
+            "as a new image:'greyscale-red localReferenceFrom localReferenceTo'\n");
+    supportedOperations.append("9. Greyscaling by intensity a local image and storing it as" +
+            " a new image:'greyscale-red localReferenceFrom localReferenceTo'\n");
+    supportedOperations.append("10. Greyscaling by luma a local image and storing it as a " +
+            "new image:'greyscale-red localReferenceFrom localReferenceTo'\n");
+    supportedOperations.append("11. Brighten a local image and storing it as a new image:" +
+            " 'brighten byHowMuch fileDesination localReference'\n");
+    supportedOperations.append("12. Darken a local image and storing it as a new image:" +
+            " 'darken byHowMuch fileDesination localReference'\n");
+    supportedOperations.append("13. Blur a local image and storing it as a new image:" +
+            " 'blur fileDesination localReference'\n");
+    supportedOperations.append("14. Sharpen a local image and storing it as a new image:" +
+            " 'sharpen fileDesination localReference'\n");
+    supportedOperations.append("15. Sepia a local image and storing it as a new image:" +
+            " 'sepia fileDesination localReference'\n");
+    SUPPORTED = supportedOperations.toString();
+  }
+
+  @Override
+  public void start() {
+    Scanner sc = new Scanner(this.r);
+
+    this.addMessage("Welcome to the Image Processing Software designed by Ben Weiss and " +
+            "Nezam Jazayeri. Here are some currently supported operations:\n\n");
+    this.addMessage(SUPPORTED);
+
+    Map<String, Commands> knownCommands;
+    knownCommands = new HashMap<>();
+    knownCommands.put("flip-vertical", new FlipVerticalCommand(sc));
+    knownCommands.put("flip-horizontal", new FlipHorizontalCommand(sc));
+    knownCommands.put("brighten", new BrightenCommand(sc));
+    knownCommands.put("darken", new DarkenCommand(sc));
+    knownCommands.put("greyscale-value", new GreyscaleValueCommand(sc));
+    knownCommands.put("greyscale-intensity", new GreyscaleIntensityCommand(sc));
+    knownCommands.put("greyscale-luma", new GreyscaleLumaCommand(sc));
+    knownCommands.put("greyscale-red", new GreyscaleRedCommand(sc));
+    knownCommands.put("greyscale-green", new GreyscaleGreenCommand(sc));
+    knownCommands.put("greyscale-blue", new GreyscaleBlueCommand(sc));
+    knownCommands.put("sepia", new SepiaCommand(sc));
+    knownCommands.put("blur", new BlurCommand(sc));
+    knownCommands.put("sharpen", new SharpenCommand(sc));
+    knownCommands.put("load", new LoadCommand(sc));
+    knownCommands.put("save", new SaveCommand(sc));
+    knownCommands.put("display", new DisplayByStringCommand(view, sc));
+
+    while (sc.hasNext()) {
+      String in = sc.next();
+      if (in.equalsIgnoreCase("done")) {
+        return;
+      } else {
+        Commands cmd = knownCommands.getOrDefault(in, null);
+        if (cmd == null) {
+          this.addMessage("Currently, that is not a supported operation. The current list" +
+                  " of supported operations are the following:\n" + SUPPORTED + "\n");
+        } else {
+          cmd.apply(model);
+          this.addMessage("Operation complete.\n");
+        }
+      }
+    }
+  }
+
+  // Allows for a String of any kind to be displayed at the Appendable location
+  private void addMessage(String s) {
+    try {
+      this.view.renderMessage(s);
+    } catch (IOException ioe) {
+      throw new IllegalStateException("Appendable File Not Working");
+    }
+  }
+}
