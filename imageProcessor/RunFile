@@ -1,0 +1,29 @@
+import java.io.InputStreamReader;
+
+import imageprocessor.controller.ControllerImpl;
+import imageprocessor.controller.ImageProcessingController;
+import imageprocessor.model.ImageProcessingModel;
+import imageprocessor.model.ModelImpl;
+import imageprocessor.view.ImageProcessingView;
+import imageprocessor.view.ImageProcessingViewImpl;
+
+/**
+ * This class contains the main method to allow the client to run the code.
+ */
+public class RunFile {
+
+  /**
+   * Main method to run image processing program.
+   * @param args for command line.
+   */
+  public static void main(String[] args) {
+
+    ImageProcessingModel m = new ModelImpl();
+    ImageProcessingView v = new ImageProcessingViewImpl(m);
+    new StringBuilder();
+    Readable r = new InputStreamReader(System.in);
+    ImageProcessingController controller = new ControllerImpl(m, v, r);
+    controller.start();
+  }
+}
+
