@@ -1,0 +1,52 @@
+package imageprocessor.controller.commanddesign.filemanipulation;
+
+import java.io.IOException;
+import java.util.NoSuchElementException;
+import java.util.Scanner;
+
+import imageprocessor.controller.commanddesign.Commands;
+import imageprocessor.model.ImageProcessingModel;
+import imageprocessor.view.ImageProcessingView;
+
+/**
+ * Function object that is called when the user wants to see the image in a digestible, string
+ * format.
+ */
+public class DisplayByStringCommand implements Commands {
+
+  private ImageProcessingView view;
+  private String src;
+  private Scanner sc;
+
+  /**
+   * Constructor.
+   * @param view View that will be called to display the image as a digestible string.
+   * @param sc scans to find the reference to the image that will be displayed.
+   * @throws IllegalStateException when the readable has no more elements to read from.
+   */
+  public DisplayByStringCommand(ImageProcessingView view, Scanner sc) throws IllegalStateException {
+    this.sc = sc;
+    this.view = view;
+  }
+
+  private void parseScanner() {
+    if (sc.hasNext()) {
+      src = sc.next();
+    }
+  }
+
+  /**
+   * Adds an image's string representation to the appendable.
+   * @param model our storage system of all images. Each object will be able to access different
+   *              images inside the model and use them to manipulate the model.
+   */
+  @Override
+  public void apply(ImageProcessingModel model) {
+    parseScanner();
+    try {
+      this.view.renderImageState(src);
+    } catch (IOException e) {
+      throw new IllegalStateException("Appendable File Not Working");
+    }
+  }
+}
