@@ -1,0 +1,52 @@
+package imageprocessor.controller.commanddesign.filemanipulation;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Scanner;
+
+import imageprocessor.controller.commanddesign.filemanipulation.loadfiletypes.BMPLoad;
+import imageprocessor.controller.commanddesign.filemanipulation.loadfiletypes.FileLoad;
+import imageprocessor.controller.commanddesign.filemanipulation.loadfiletypes.JPGLoad;
+import imageprocessor.controller.commanddesign.filemanipulation.loadfiletypes.PNGLoad;
+import imageprocessor.controller.commanddesign.filemanipulation.loadfiletypes.PPMLoad;
+import imageprocessor.model.ImageProcessingModel;
+
+/**
+ * Function object that is called when the user wants to load a PPM file into our model's storage.
+ */
+public class LoadCommand extends AbstractFileManipulation {
+
+  /**
+   * Constructor for a {@code LoadCommand} that takes in a Scanner.
+   * @param sc Scanner of readable that gets the file destination of the PPM file we want to add
+   *           to our model along with its string "tag."
+   */
+  public LoadCommand(Scanner sc) {
+      super(sc);
+    }
+
+
+  /**
+   * Adds an image with a reference into our model.
+   * @param model our storage system of all images. Each object will be able to access different
+   *              images inside the model and use them to manipulate the model.
+   */
+  @Override
+  public void apply(ImageProcessingModel model) {
+    parseScanner();
+    FileLoad load;
+    Map<String, FileLoad> loadType = new HashMap<>();
+    loadType.put("ppm", new PPMLoad(file, reference));
+    loadType.put("png", new PNGLoad(file, reference));
+    loadType.put("bmp", new BMPLoad(file, reference));
+    loadType.put("jpg", new JPGLoad(file, reference));
+
+    load = loadType.getOrDefault(extension, null);
+    if (load == null) {
+      throw new IllegalStateException("Not a valid extension");
+    }
+    else {
+      load.apply(model);
+    }
+  }
+}
