@@ -1,0 +1,16 @@
+package imageprocessor.controller.listeners;
+
+import java.awt.event.ActionEvent;
+
+/**
+ * Listeners of the GUI Buttons.
+ */
+public interface ActionListeners extends java.awt.event.ActionListener {
+
+    /**
+     * Takes an action event and modifies the view in some way.
+     * @param e the event to be processed
+     */
+    @Override
+    public void actionPerformed(ActionEvent e);
+}
