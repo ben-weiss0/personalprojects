@@ -1,0 +1,17 @@
+package imageprocessor.model.operations;
+
+import imageprocessor.model.IImage;
+import imageprocessor.model.operations.pixel.PixelGreyscaleLuma;
+import imageprocessor.model.operations.pixel.PixelOperations;
+
+/**
+ * Function object to greyscale an image by its luma.
+ */
+public class GreyscaleLuma implements Operations {
+
+  @Override
+  public IImage apply(IImage image) {
+    PixelOperations o = new PixelGreyscaleLuma();
+    return new FullImageOperation(o).apply(image);
+  }
+}
