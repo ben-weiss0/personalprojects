@@ -1,0 +1,15 @@
+package imageprocessor.controller.commanddesign.filemanipulation.savefiletypes;
+
+import imageprocessor.model.ImageProcessingModel;
+
+/**
+ * An interface that allows for the client to save a number of popular files locally in the program
+ * and eventually onto their computer if they desire.
+ */
+public interface FileSave {
+  /**
+   * Saves an image from the local model to the client's computer.
+   * @param model an {@code ImageProcessingModel} that contains stored images
+   */
+  void apply(ImageProcessingModel model);
+}
