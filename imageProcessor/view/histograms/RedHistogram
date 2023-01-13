@@ -1,0 +1,17 @@
+package imageprocessor.view.histograms;
+
+import imageprocessor.model.operations.GreyscaleRed;
+import imageprocessor.model.operations.Operations;
+
+/**
+ * Represents the red histogram for an image.
+ */
+public class RedHistogram extends AbstractHistogram {
+
+
+  @Override
+  protected Operations selectGreyScale() {
+    return new GreyscaleRed();
+  }
+
+}
