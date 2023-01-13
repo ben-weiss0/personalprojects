@@ -1,0 +1,71 @@
+package imageprocessor.view;
+
+import java.io.IOException;
+
+import imageprocessor.model.IImage;
+import imageprocessor.model.ImageProcessingModel;
+
+/**
+ * Class representing our View object with an image storage system as its model.
+ */
+public class ImageProcessingViewImpl implements ImageProcessingView {
+
+  private ImageProcessingModel model;
+  private Appendable a;
+
+  /**
+   * Constructor.
+   * @param model is the storage system of images we will refer to.
+   * @param a is the appendable we will display messages on.
+   * @throws IllegalArgumentException when the model or appendable is null
+   */
+  public ImageProcessingViewImpl(ImageProcessingModel model, Appendable a)
+          throws IllegalArgumentException {
+    if (model == null || a == null) {
+      throw new IllegalArgumentException("Cannot be null");
+    }
+    this.model = model;
+    this.a = a;
+  }
+
+  /**
+   * Constructor that autosets appendable to System.out
+   * @param model is the storage system of images we will refer to.
+   */
+  public ImageProcessingViewImpl(ImageProcessingModel model) {
+    if (model == null) {
+      throw new IllegalArgumentException("Cannot be null");
+    }
+    this.model = model;
+    this.a = System.out;
+  }
+
+  @Override
+  public void renderImageState(String reference) throws IOException {
+    IImage image = this.model.getImageFrom(reference);
+    this.translate(image);
+  }
+
+  @Override
+  public void renderMessage(String s) throws IOException {
+    this.a.append(s);
+  }
+
+  private void translate(IImage img) throws IOException {
+
+    this.renderMessage("Width of image: " + img.getColumns() + "\n");
+    this.renderMessage("Height of image: " + img.getColumns() + "\n");
+    this.renderMessage("Maximum value of a color in this file (usually 255): " +
+            img.getMaxValue() + "\n");
+
+    for (int i = 0; i < img.getRows(); i++) {
+      for (int j = 0; j < img.getColumns(); j++) {
+        int r = img.getPixelAt(i, j).getRed();
+        int g = img.getPixelAt(i, j).getGreen();
+        int b = img.getPixelAt(i, j).getBlue();
+        this.renderMessage("Color of pixel (" + j + "," + i + "): " + r + "," + g + "," + b +
+                "\n");
+      }
+    }
+  }
+}
