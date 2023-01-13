@@ -1,0 +1,336 @@
+import org.junit.Test;
+
+import imageprocessor.model.IImage;
+import imageprocessor.model.ImageProcessingModel;
+import imageprocessor.model.ModelImpl;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+
+/**
+ * Storage model testing.
+ */
+public class StorageModelTest extends ImageModelTest {
+
+  ImageProcessingModel model;
+
+  @Override
+  public void setAll() {
+    super.setAll();
+    model = new ModelImpl();
+    model.add("red", redImage);
+    model.add("green", greenImage);
+    model.add("blue", blueImage);
+    model.add("mixed", mixedImage);
+  }
+
+  @Test
+  public void testToReplace() {
+    model.add("blue", mixedImage);
+    assertEquals(mixedImage, model.getImageFrom("blue"));
+  }
+
+  @Test
+  public void testConstructor() {
+    ImageProcessingModel model = new ModelImpl();
+    try {
+      model.getImageFrom("blue");
+    }
+    catch (NullPointerException e) {
+      assertEquals("", e.getMessage());
+    }
+    model.add("blue", blueImage);
+    try {
+      IImage get = model.getImageFrom("blue");
+      assertEquals(this.blueImage, get);
+    }
+    catch (NullPointerException e) {
+      fail("Shouldn't throw exception");
+    }
+  }
+
+  @Test
+  public void testRetrieve() {
+    assertEquals(redImage, model.getImageFrom("red"));
+    assertEquals(greenImage, model.getImageFrom("green"));
+    assertEquals(blueImage, model.getImageFrom("blue"));
+    assertEquals(mixedImage, model.getImageFrom("mixed"));
+  }
+
+  @Test
+  public void testAdd() {
+    ImageProcessingModel model = new ModelImpl();
+    try {
+      model.getImageFrom("red");
+    }
+    catch (NullPointerException e) {
+      assertEquals("", e.getMessage());
+    }
+    model.add("red", redImage);
+    assertEquals(redImage, model.getImageFrom("red"));
+    try {
+      model.getImageFrom("green");
+    }
+    catch (NullPointerException e) {
+      assertEquals("", e.getMessage());
+    }
+    model.add("green", greenImage);
+    assertEquals(greenImage, model.getImageFrom("green"));
+    try {
+      model.getImageFrom("blue");
+    }
+    catch (NullPointerException e) {
+      assertEquals("", e.getMessage());
+    }
+    model.add("blue", blueImage);
+    assertEquals(blueImage, model.getImageFrom("blue"));
+    try {
+      model.getImageFrom("mixed");
+    }
+    catch (NullPointerException e) {
+      assertEquals("", e.getMessage());
+    }
+    model.add("mixed", mixedImage);
+    assertEquals(mixedImage, model.getImageFrom("mixed"));
+  }
+
+  @Test
+  public void testTransformModelBrighten() {
+    this.model.transform(brightenExposureObj, "mixed", "new");
+    checkPixel(model.getImageFrom("new").getPixelAt(0, 1), 255,
+            20, 20, 255);
+    checkPixel(model.getImageFrom("new").getPixelAt(2, 2), 20,
+            255, 20, 255);
+    checkPixel(model.getImageFrom("new").getPixelAt(0, 0), 20,
+            20, 255, 255);
+    checkPixel(model.getImageFrom("new").getPixelAt(0, 2), 255,
+            255, 20, 255);
+    checkPixel(model.getImageFrom("new").getPixelAt(1, 1), 207,
+            95, 250, 255);
+    checkPixel(model.getImageFrom("new").getPixelAt(2, 0), 255,
+            40, 40, 255);
+    checkPixel(model.getImageFrom("new").getPixelAt(1, 2), 20,
+            40, 40, 255);
+    checkPixel(model.getImageFrom("new").getPixelAt(1, 0), 255,
+            255, 255, 255);
+    checkPixel(model.getImageFrom("new").getPixelAt(2, 1), 197,
+            85, 240, 255);
+    assertEquals(mixedImage, model.getImageFrom("mixed"));
+  }
+
+  @Test
+  public void testTransformModelDarken() {
+    this.model.transform(darkenExposureObj, "mixed", "new");
+    checkPixel(model.getImageFrom("new").getPixelAt(0, 1),
+            235, 0, 0, 255);
+    checkPixel(model.getImageFrom("new").getPixelAt(2, 2),
+            0, 235, 0, 255);
+    checkPixel(model.getImageFrom("new").getPixelAt(0, 0),
+            0, 0, 235, 255);
+    checkPixel(model.getImageFrom("new").getPixelAt(0, 2),
+            235, 235, 0, 255);
+    checkPixel(model.getImageFrom("new").getPixelAt(1, 1),
+            167, 55, 210, 255);
+    checkPixel(model.getImageFrom("new").getPixelAt(2, 0),
+            235, 0, 0, 255);
+    checkPixel(model.getImageFrom("new").getPixelAt(1, 2),
+            0, 0, 0, 255);
+    checkPixel(model.getImageFrom("new").getPixelAt(1, 0),
+            232, 232, 232, 255);
+    checkPixel(model.getImageFrom("new").getPixelAt(2, 1),
+            157, 45, 200, 255);
+    assertEquals(mixedImage, model.getImageFrom("mixed"));
+  }
+
+  @Test
+  public void testTransformModelFlipHorizontal() {
+    this.model.transform(flipHorizontalObj, "mixed", "new");
+    checkPixel(model.getImageFrom("new").getPixelAt(0, 1),
+            255, 0, 0, 255);
+    checkPixel(model.getImageFrom("new").getPixelAt(2, 2),
+            255, 20, 20, 255);
+    checkPixel(model.getImageFrom("new").getPixelAt(0, 0),
+            255, 255, 0, 255);
+    checkPixel(model.getImageFrom("new").getPixelAt(0, 2),
+            0, 0, 255, 255);
+    checkPixel(model.getImageFrom("new").getPixelAt(1, 1),
+            187, 75, 230, 255);
+    checkPixel(model.getImageFrom("new").getPixelAt(2, 0),
+            0, 255, 0, 255);
+    checkPixel(model.getImageFrom("new").getPixelAt(1, 2),
+            252, 252, 252, 255);
+    checkPixel(model.getImageFrom("new").getPixelAt(1, 0),
+            0, 20, 20, 255);
+    checkPixel(model.getImageFrom("new").getPixelAt(2, 1),
+            177, 65, 220, 255);
+    assertEquals(mixedImage, model.getImageFrom("mixed"));
+  }
+
+  @Test
+  public void testTransformModelFlipVertical() {
+    this.model.transform(flipVerticalObj, "mixed", "new");
+    checkPixel(model.getImageFrom("new").getPixelAt(0, 1),
+            177, 65, 220, 255);
+    checkPixel(model.getImageFrom("new").getPixelAt(2, 2),
+            255, 255, 0, 255);
+    checkPixel(model.getImageFrom("new").getPixelAt(0, 0),
+            255, 20, 20, 255);
+    checkPixel(model.getImageFrom("new").getPixelAt(0, 2),
+            0, 255, 0, 255);
+    checkPixel(model.getImageFrom("new").getPixelAt(1, 1),
+            187, 75, 230, 255);
+    checkPixel(model.getImageFrom("new").getPixelAt(2, 0),
+            0, 0, 255, 255);
+    checkPixel(model.getImageFrom("new").getPixelAt(1, 2),
+            0, 20, 20, 255);
+    checkPixel(model.getImageFrom("new").getPixelAt(1, 0),
+            252, 252, 252, 255);
+    checkPixel(model.getImageFrom("new").getPixelAt(2, 1),
+            255, 0, 0, 255);
+    assertEquals(mixedImage, model.getImageFrom("mixed"));
+  }
+
+  @Test
+  public void testModelGreyscaleRed() {
+    this.model.transform(greyscaleRed, "mixed", "new");
+    checkPixel(model.getImageFrom("new").getPixelAt(0, 1),
+            255, 255, 255, 255);
+    checkPixel(model.getImageFrom("new").getPixelAt(2, 2),
+            0, 0, 0, 255);
+    checkPixel(model.getImageFrom("new").getPixelAt(0, 0),
+            0, 0, 0, 255);
+    checkPixel(model.getImageFrom("new").getPixelAt(0, 2),
+            255, 255, 255, 255);
+    checkPixel(model.getImageFrom("new").getPixelAt(1, 1),
+            187, 187, 187, 255);
+    checkPixel(model.getImageFrom("new").getPixelAt(2, 0),
+            255, 255, 255, 255);
+    checkPixel(model.getImageFrom("new").getPixelAt(1, 2),
+            0, 0, 0, 255);
+    checkPixel(model.getImageFrom("new").getPixelAt(1, 0),
+            252, 252, 252, 255);
+    checkPixel(model.getImageFrom("new").getPixelAt(2, 1),
+            177, 177, 177, 255);
+    assertEquals(mixedImage, model.getImageFrom("mixed"));
+  }
+
+  @Test
+  public void testModelGreyscaleGreen() {
+    this.model.transform(greyscaleGreen, "mixed", "new");
+    checkPixel(model.getImageFrom("new").getPixelAt(0, 1),
+            0, 0, 0, 255);
+    checkPixel(model.getImageFrom("new").getPixelAt(2, 2),
+            255, 255, 255, 255);
+    checkPixel(model.getImageFrom("new").getPixelAt(0, 0),
+            0, 0, 0, 255);
+    checkPixel(model.getImageFrom("new").getPixelAt(0, 2),
+            255, 255, 255, 255);
+    checkPixel(model.getImageFrom("new").getPixelAt(1, 1),
+            75, 75, 75, 255);
+    checkPixel(model.getImageFrom("new").getPixelAt(2, 0),
+            20, 20, 20, 255);
+    checkPixel(model.getImageFrom("new").getPixelAt(1, 2),
+            20, 20, 20, 255);
+    checkPixel(model.getImageFrom("new").getPixelAt(1, 0),
+            252, 252, 252, 255);
+    checkPixel(model.getImageFrom("new").getPixelAt(2, 1),
+            65, 65, 65, 255);
+    assertEquals(mixedImage, model.getImageFrom("mixed"));
+  }
+
+  @Test
+  public void testModelGreyscaleBlue() {
+    this.model.transform(greyscaleBlue, "mixed", "new");
+    checkPixel(model.getImageFrom("new").getPixelAt(0, 1),
+            0, 0, 0, 255);
+    checkPixel(model.getImageFrom("new").getPixelAt(2, 2),
+            0, 0, 0, 255);
+    checkPixel(model.getImageFrom("new").getPixelAt(0, 0),
+            255, 255, 255, 255);
+    checkPixel(model.getImageFrom("new").getPixelAt(0, 2),
+            0, 0, 0, 255);
+    checkPixel(model.getImageFrom("new").getPixelAt(1, 1),
+            230, 230, 230, 255);
+    checkPixel(model.getImageFrom("new").getPixelAt(2, 0),
+            20, 20, 20, 255);
+    checkPixel(model.getImageFrom("new").getPixelAt(1, 2),
+            20, 20, 20, 255);
+    checkPixel(model.getImageFrom("new").getPixelAt(1, 0),
+            252, 252, 252, 255);
+    checkPixel(model.getImageFrom("new").getPixelAt(2, 1),
+            220, 220, 220, 255);
+    assertEquals(mixedImage, model.getImageFrom("mixed"));
+  }
+
+  @Test
+  public void testModelGreyscaleValue() {
+    this.model.transform(greyscaleValue, "mixed", "new");
+    checkPixel(model.getImageFrom("new").getPixelAt(0, 1), 255,
+            255, 255, 255);
+    checkPixel(model.getImageFrom("new").getPixelAt(2, 2), 255,
+            255, 255, 255);
+    checkPixel(model.getImageFrom("new").getPixelAt(0, 0), 255,
+            255, 255, 255);
+    checkPixel(model.getImageFrom("new").getPixelAt(0, 2), 255,
+            255, 255, 255);
+    checkPixel(model.getImageFrom("new").getPixelAt(1, 1), 230,
+            230, 230, 255);
+    checkPixel(model.getImageFrom("new").getPixelAt(2, 0), 255,
+            255, 255, 255);
+    checkPixel(model.getImageFrom("new").getPixelAt(1, 2), 20,
+            20, 20, 255);
+    checkPixel(model.getImageFrom("new").getPixelAt(1, 0), 252,
+            252, 252, 255);
+    checkPixel(model.getImageFrom("new").getPixelAt(2, 1), 220,
+            220, 220, 255);
+    assertEquals(mixedImage, model.getImageFrom("mixed"));
+  }
+
+  @Test
+  public void testModelGreyscaleIntensity() {
+    this.model.transform(greyscaleIntensity, "mixed", "new");
+    checkPixel(model.getImageFrom("new").getPixelAt(0, 1), 85,
+            85, 85, 255);
+    checkPixel(model.getImageFrom("new").getPixelAt(2, 2), 85,
+            85, 85, 255);
+    checkPixel(model.getImageFrom("new").getPixelAt(0, 0), 85,
+            85, 85, 255);
+    checkPixel(model.getImageFrom("new").getPixelAt(0, 2), 170,
+            170, 170, 255);
+    checkPixel(model.getImageFrom("new").getPixelAt(1, 1), 164,
+            164, 164, 255);
+    checkPixel(model.getImageFrom("new").getPixelAt(2, 0), 98,
+            98, 98, 255);
+    checkPixel(model.getImageFrom("new").getPixelAt(1, 2), 13,
+            13, 13, 255);
+    checkPixel(model.getImageFrom("new").getPixelAt(1, 0), 252,
+            252, 252, 255);
+    checkPixel(model.getImageFrom("new").getPixelAt(2, 1), 154,
+            154, 154, 255);
+    assertEquals(mixedImage, model.getImageFrom("mixed"));
+  }
+
+  @Test
+  public void testModelGreyscaleLuma() {
+    this.model.transform(greyscaleLuma, "mixed", "new");
+    checkPixel(model.getImageFrom("new").getPixelAt(0, 1), 54,
+            54, 54, 255);
+    checkPixel(model.getImageFrom("new").getPixelAt(2, 2), 182,
+            182, 182, 255);
+    checkPixel(model.getImageFrom("new").getPixelAt(0, 0), 18,
+            18, 18, 255);
+    checkPixel(model.getImageFrom("new").getPixelAt(0, 2), 237,
+            237, 237, 255);
+    checkPixel(model.getImageFrom("new").getPixelAt(1, 1), 110,
+            110, 110, 255);
+    checkPixel(model.getImageFrom("new").getPixelAt(2, 0), 70,
+            70, 70, 255);
+    checkPixel(model.getImageFrom("new").getPixelAt(1, 2), 16,
+            16, 16, 255);
+    checkPixel(model.getImageFrom("new").getPixelAt(1, 0), 252,
+            252, 252, 255);
+    checkPixel(model.getImageFrom("new").getPixelAt(2, 1), 100,
+            100, 100, 255);
+    assertEquals(mixedImage, model.getImageFrom("mixed"));
+  }
+}
