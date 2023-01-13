@@ -1,0 +1,23 @@
+package imageprocessor.controller.listeners;
+
+import imageprocessor.model.operations.FlipVertical;
+import imageprocessor.model.operations.Operations;
+import imageprocessor.view.ViewForGUI;
+
+/**
+ * Action listener for vertical flip button.
+ */
+public class FlipVerticalActionListener extends AbstractTransformationListener {
+    /**
+     * Constructor.
+     * @param board the working view.
+     */
+    public FlipVerticalActionListener(ViewForGUI board) {
+        super(board);
+    }
+
+    @Override
+    protected Operations getCommand() {
+        return new FlipVertical();
+    }
+}
