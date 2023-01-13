@@ -1,0 +1,19 @@
+import javax.swing.*;
+
+/**
+ * Mock label for testing.
+ */
+public class MockLabel extends JLabel {
+    private StringBuilder sb;
+    public MockLabel() {
+        sb = new StringBuilder();
+    }
+    @Override
+    public void setText(String text) {
+        sb = new StringBuilder(text);
+     }
+    @Override
+    public String getText() {
+        return sb.toString();
+    }
+}
