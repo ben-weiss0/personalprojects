@@ -1,0 +1,843 @@
+import org.junit.Test;
+
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.StringReader;
+
+import imageprocessor.controller.ControllerImpl;
+import imageprocessor.controller.ImageProcessingController;
+import imageprocessor.model.IImage;
+import imageprocessor.model.IPixel;
+import imageprocessor.model.ImageImpl;
+import imageprocessor.model.ImageProcessingModel;
+import imageprocessor.model.ModelImpl;
+import imageprocessor.model.PixelImpl;
+import imageprocessor.view.ImageProcessingView;
+import imageprocessor.view.ImageProcessingViewImpl;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
+/**
+ * Testing controller.
+ */
+public class ControllerTest extends ViewTest {
+
+  StringBuilder appendable;
+  ImageProcessingView view;
+  ImageProcessingController controller;
+
+  IPixel topLeft;
+  IPixel topMiddle;
+  IPixel topRight;
+  IPixel middleLeft;
+  IPixel middleMiddle;
+  IPixel middleRight;
+  IPixel bottomLeft;
+  IPixel bottomMiddle;
+  IPixel bottomRight;
+  IImage myImage;
+  ImageProcessingModel myModel;
+  ImageProcessingView myView;
+
+  @Override
+  public void setAll() {
+    super.setAll();
+    appendable = new StringBuilder();
+    view = new ImageProcessingViewImpl(model, appendable);
+
+    topLeft = new PixelImpl.PixelBuilder()
+            .red(0)
+            .green(14)
+            .blue(28)
+            .build();
+    topMiddle = new PixelImpl.PixelBuilder()
+            .red(42)
+            .green(56)
+            .blue(70)
+            .build();
+    topRight = new PixelImpl.PixelBuilder()
+            .red(84)
+            .green(98)
+            .blue(112)
+            .build();
+    middleLeft = new PixelImpl.PixelBuilder()
+            .red(126)
+            .green(140)
+            .blue(154)
+            .build();
+    middleMiddle = new PixelImpl.PixelBuilder()
+            .red(168)
+            .green(182)
+            .blue(196)
+            .build();
+    middleRight = new PixelImpl.PixelBuilder()
+            .red(210)
+            .green(224)
+            .blue(238)
+            .build();
+    bottomLeft = new PixelImpl.PixelBuilder()
+            .red(255)
+            .green(10)
+            .blue(10)
+            .build();
+    bottomMiddle = new PixelImpl.PixelBuilder()
+            .red(250)
+            .green(70)
+            .blue(70)
+            .build();
+    bottomRight = new PixelImpl.PixelBuilder()
+            .red(90)
+            .green(220)
+            .blue(0)
+            .build();
+
+    myImage = new ImageImpl(new IPixel[][]{
+            {topLeft, topMiddle, topRight},
+            {middleLeft, middleMiddle, middleRight},
+            {bottomLeft, bottomMiddle, bottomRight}});
+
+    myModel = new ModelImpl();
+    myView = new ImageProcessingViewImpl(myModel, appendable);
+  }
+
+  private void setCustomController(StringReader r) {
+    this.controller = new ControllerImpl(myModel, myView, r);
+  }
+
+  @Test
+  public void testConstructorExceptions() {
+    try {
+      ImageProcessingController c = new ControllerImpl(null, myView,
+              new StringReader(""));
+    }
+    catch (IllegalArgumentException e) {
+      assertEquals("Model, View, and Readable must be non-null", e.getMessage());
+    }
+
+    try {
+      ImageProcessingController c = new ControllerImpl(myModel, null,
+              new StringReader(""));
+    }
+    catch (IllegalArgumentException e) {
+      assertEquals("Model, View, and Readable must be non-null", e.getMessage());
+    }
+
+    try {
+      ImageProcessingController c = new ControllerImpl(myModel,
+              myView, null);
+    }
+    catch (IllegalArgumentException e) {
+      assertEquals("Model, View, and Readable must be non-null", e.getMessage());
+    }
+  }
+
+  @Test
+  public void testBadInput() {
+    StringReader reader = new StringReader("googoogaagaa");
+    this.setCustomController(reader);
+    controller.start();
+    assertEquals("Welcome to the Image Processing Software designed by Ben Weiss and " +
+            "Nezam Jazayeri. Here are some currently supported operations:",
+            appendable.toString().split("\n")[0]);
+    assertEquals("Currently, that is not a supported operation. The current " +
+            "list of supported operations are the following:",
+            appendable.toString().split("\n")[17]);
+    setAll();
+    try {
+      StringReader reader2 = new StringReader("load xyz xyz");
+      this.setCustomController(reader2);
+      controller.start();
+      fail("No");
+    }
+    catch (IllegalStateException e) {
+      assertEquals("Not a valid extension", e.getMessage());
+    }
+  }
+
+  @Test
+  public void testLoad() {
+
+    assertEquals(null, myModel.getImageFrom("original"));
+
+    StringReader reader = new StringReader("load res/original.ppm original done");
+    this.setCustomController(reader);
+    controller.start();
+    IImage image =  this.myModel.getImageFrom("original");
+    assertEquals(3, image.getColumns());
+    assertEquals(3, image.getRows());
+    assertEquals(255, image.getMaxValue());
+    assertEquals(0, image.getPixelAt(0, 0).getRed());
+    assertEquals(14, image.getPixelAt(0, 0).getGreen());
+    assertEquals(28, image.getPixelAt(0, 0).getBlue());
+    assertEquals(42, image.getPixelAt(0, 1).getRed());
+    assertEquals(56, image.getPixelAt(0, 1).getGreen());
+    assertEquals(70, image.getPixelAt(0, 1).getBlue());
+    assertEquals(90, image.getPixelAt(2, 2).getRed());
+    assertEquals(220, image.getPixelAt(2, 2).getGreen());
+    assertEquals(0, image.getPixelAt(2, 2).getBlue());
+    assertEquals("Operation complete.", appendable.toString().split("\n")[17]);
+  }
+
+  @Test
+  public void testFlipHorizontal() {
+
+    StringReader reader = new StringReader("load res/original.ppm original " +
+            "flip-horizontal original flippedH done");
+    this.setCustomController(reader);
+    controller.start();
+    assertEquals("Operation complete.", appendable.toString().split("\n")[17]);
+    assertEquals("Operation complete.", appendable.toString().split("\n")[18]);
+    IImage image =  this.myModel.getImageFrom("flippedH");
+    assertEquals(0, image.getPixelAt(0, 2).getRed());
+    assertEquals(14, image.getPixelAt(0, 2).getGreen());
+    assertEquals(28, image.getPixelAt(0, 2).getBlue());
+    assertEquals(42, image.getPixelAt(0, 1).getRed());
+    assertEquals(56, image.getPixelAt(0, 1).getGreen());
+    assertEquals(70, image.getPixelAt(0, 1).getBlue());
+    assertEquals(90, image.getPixelAt(2, 0).getRed());
+    assertEquals(220, image.getPixelAt(2, 0).getGreen());
+    assertEquals(0, image.getPixelAt(2, 0).getBlue());
+  }
+
+  @Test
+  public void testFlipVertical() {
+
+    StringReader reader = new StringReader("load res/original.ppm original " +
+            "flip-vertical original flippedV done");
+    this.setCustomController(reader);
+    controller.start();
+    assertEquals("Operation complete.", appendable.toString().split("\n")[17]);
+    assertEquals("Operation complete.", appendable.toString().split("\n")[18]);
+    IImage image =  this.myModel.getImageFrom("flippedV");
+    assertEquals(0, image.getPixelAt(2, 0).getRed());
+    assertEquals(14, image.getPixelAt(2, 0).getGreen());
+    assertEquals(28, image.getPixelAt(2, 0).getBlue());
+    assertEquals(42, image.getPixelAt(2, 1).getRed());
+    assertEquals(56, image.getPixelAt(2, 1).getGreen());
+    assertEquals(70, image.getPixelAt(2, 1).getBlue());
+    assertEquals(90, image.getPixelAt(0, 2).getRed());
+    assertEquals(220, image.getPixelAt(0, 2).getGreen());
+    assertEquals(0, image.getPixelAt(0, 2).getBlue());
+  }
+
+  @Test
+  public void testGreyscale() {
+
+    StringReader reader = new StringReader("load res/original.ppm original " +
+            "greyscale-red original red done");
+    this.setCustomController(reader);
+    controller.start();
+    IImage image =  this.myModel.getImageFrom("red");
+    assertEquals(3, image.getColumns());
+    assertEquals(3, image.getRows());
+    assertEquals(255, image.getMaxValue());
+    assertEquals(0, image.getPixelAt(0, 0).getRed());
+    assertEquals(0, image.getPixelAt(0, 0).getGreen());
+    assertEquals(0, image.getPixelAt(0, 0).getBlue());
+    assertEquals(42, image.getPixelAt(0, 1).getRed());
+    assertEquals(42, image.getPixelAt(0, 1).getGreen());
+    assertEquals(42, image.getPixelAt(0, 1).getBlue());
+    assertEquals(90, image.getPixelAt(2, 2).getRed());
+    assertEquals(90, image.getPixelAt(2, 2).getGreen());
+    assertEquals(90, image.getPixelAt(2, 2).getBlue());
+    assertEquals("Operation complete.", appendable.toString().split("\n")[17]);
+    assertEquals("Operation complete.", appendable.toString().split("\n")[18]);
+  }
+
+  @Test
+  public void testPPMSave() {
+    try {
+      new FileInputStream("res/original.ppm");
+    }
+    catch (FileNotFoundException e) {
+      fail("Fail");
+    }
+    StringReader reader = new StringReader("load res/original.ppm original " +
+            "greyscale-red original red " +
+            "save res/newRed.ppm red done");
+    this.setCustomController(reader);
+    controller.start();
+    StringReader newReader = new StringReader("load res/newRed.ppm red done");
+    ImageProcessingModel emptyModel = new ModelImpl();
+    ImageProcessingView emptyView = new ImageProcessingViewImpl(emptyModel, new StringBuilder());
+    ControllerImpl newController = new ControllerImpl(emptyModel, emptyView, newReader);
+    assertNull(emptyModel.getImageFrom("red"));
+    newController.start();
+    IImage image = emptyModel.getImageFrom("red");
+    assertEquals(0, image.getPixelAt(0, 0).getRed());
+    assertEquals(0, image.getPixelAt(0, 0).getGreen());
+    assertEquals(0, image.getPixelAt(0, 0).getBlue());
+    assertEquals(42, image.getPixelAt(0, 1).getRed());
+    assertEquals(42, image.getPixelAt(0, 1).getGreen());
+    assertEquals(42, image.getPixelAt(0, 1).getBlue());
+    assertEquals(84, image.getPixelAt(0, 2).getRed());
+    assertEquals(84, image.getPixelAt(0, 2).getGreen());
+    assertEquals(84, image.getPixelAt(0, 2).getBlue());
+    assertEquals(126, image.getPixelAt(1, 0).getRed());
+    assertEquals(126, image.getPixelAt(1, 0).getGreen());
+    assertEquals(126, image.getPixelAt(1, 0).getBlue());
+    assertEquals(168, image.getPixelAt(1, 1).getRed());
+    assertEquals(168, image.getPixelAt(1, 1).getGreen());
+    assertEquals(168, image.getPixelAt(1, 1).getBlue());
+    assertEquals(210, image.getPixelAt(1, 2).getRed());
+    assertEquals(210, image.getPixelAt(1, 2).getGreen());
+    assertEquals(210, image.getPixelAt(1, 2).getBlue());
+    assertEquals(255, image.getPixelAt(2, 0).getRed());
+    assertEquals(255, image.getPixelAt(2, 0).getGreen());
+    assertEquals(255, image.getPixelAt(2, 0).getBlue());
+    assertEquals(250, image.getPixelAt(2, 1).getRed());
+    assertEquals(250, image.getPixelAt(2, 1).getGreen());
+    assertEquals(250, image.getPixelAt(2, 1).getBlue());
+    assertEquals(90, image.getPixelAt(2, 2).getRed());
+    assertEquals(90, image.getPixelAt(2, 2).getGreen());
+    assertEquals(90, image.getPixelAt(2, 2).getBlue());
+  }
+
+  @Test
+  public void testPNGSave() {
+    // Tests greyscale-red functionality
+    try {
+      new FileInputStream("res/a.png");
+    }
+    catch (FileNotFoundException e) {
+      fail("Fail");
+    }
+    StringReader reader = new StringReader("load res/a.png original " +
+            "greyscale-red original red " +
+            "res/newRed.png red done");
+    this.setCustomController(reader);
+    controller.start();
+    StringReader newReader = new StringReader("load res/newRed.png red done");
+    ImageProcessingModel emptyModel = new ModelImpl();
+    ImageProcessingView emptyView = new ImageProcessingViewImpl(emptyModel, new StringBuilder());
+    ControllerImpl newController = new ControllerImpl(emptyModel, emptyView, newReader);
+    assertNull(emptyModel.getImageFrom("red"));
+    newController.start();
+    IImage image = emptyModel.getImageFrom("red");
+    assertEquals(255, image.getPixelAt(0, 0).getRed());
+    assertEquals(255, image.getPixelAt(0, 0).getGreen());
+    assertEquals(255, image.getPixelAt(0, 0).getBlue());
+    assertEquals(0, image.getPixelAt(0, 1).getRed());
+    assertEquals(0, image.getPixelAt(0, 1).getGreen());
+    assertEquals(0, image.getPixelAt(0, 1).getBlue());
+    assertEquals(0, image.getPixelAt(1, 0).getRed());
+    assertEquals(0, image.getPixelAt(1, 0).getGreen());
+    assertEquals(0, image.getPixelAt(1, 0).getBlue());
+    assertEquals(255, image.getPixelAt(1, 1).getRed());
+    assertEquals(255, image.getPixelAt(1, 1).getGreen());
+    assertEquals(255, image.getPixelAt(1, 1).getBlue());
+
+    // Tests flip-vertical functionality
+    try {
+      new FileInputStream("res/a.png");
+    }
+    catch (FileNotFoundException e) {
+      fail("Fail");
+    }
+    reader = new StringReader("load res/a.png flipper " +
+            "flip-vertical flipper flipped " +
+            "save res/flipped.png flipped done");
+    this.setCustomController(reader);
+    controller.start();
+    newReader = new StringReader("load res/flipped.png newFlipped done");
+    emptyModel = new ModelImpl();
+    emptyView = new ImageProcessingViewImpl(emptyModel, new StringBuilder());
+    newController = new ControllerImpl(emptyModel, emptyView, newReader);
+    assertNull(emptyModel.getImageFrom("newFlipped"));
+    newController.start();
+    image = emptyModel.getImageFrom("newFlipped");
+    assertEquals(0, image.getPixelAt(0, 0).getRed());
+    assertEquals(255, image.getPixelAt(0, 0).getGreen());
+    assertEquals(0, image.getPixelAt(0, 0).getBlue());
+    assertEquals(255, image.getPixelAt(0, 1).getRed());
+    assertEquals(0, image.getPixelAt(0, 1).getGreen());
+    assertEquals(0, image.getPixelAt(0, 1).getBlue());
+    assertEquals(255, image.getPixelAt(1, 0).getRed());
+    assertEquals(255, image.getPixelAt(1, 0).getGreen());
+    assertEquals(255, image.getPixelAt(1, 0).getBlue());
+    assertEquals(0, image.getPixelAt(1, 1).getRed());
+    assertEquals(0, image.getPixelAt(1, 1).getGreen());
+    assertEquals(0, image.getPixelAt(1, 1).getBlue());
+  }
+
+  @Test
+  public void testBMPSave() {
+    // Tests flip-horizontal
+    try {
+      new FileInputStream("res/a.bmp");
+    }
+    catch (FileNotFoundException e) {
+      fail("Fail");
+    }
+    StringReader reader = new StringReader("load res/a.bmp daflip " +
+            "flip-horizontal daflip daflipper " +
+            "save res/daflipper.bmp daflipper done");
+    this.setCustomController(reader);
+    controller.start();
+    StringReader newReader = new StringReader("res/daflipper.bmp mybpm done");
+    ImageProcessingModel emptyModel = new ModelImpl();
+    ImageProcessingView emptyView = new ImageProcessingViewImpl(emptyModel, new StringBuilder());
+    ControllerImpl newController = new ControllerImpl(emptyModel, emptyView, newReader);
+    assertNull(emptyModel.getImageFrom("mybpm"));
+    newController.start();
+    IImage image = emptyModel.getImageFrom("mybpm");
+//    assertEquals(0, image.getPixelAt(0, 0).getRed());
+//    assertEquals(0, image.getPixelAt(0, 0).getGreen());
+//    assertEquals(0, image.getPixelAt(0, 0).getBlue());
+//    assertEquals(255, image.getPixelAt(0, 1).getRed());
+//    assertEquals(255, image.getPixelAt(0, 1).getGreen());
+//    assertEquals(255, image.getPixelAt(0, 1).getBlue());
+//    assertEquals(255, image.getPixelAt(1, 0).getRed());
+//    assertEquals(0, image.getPixelAt(1, 0).getGreen());
+//    assertEquals(0, image.getPixelAt(1, 0).getBlue());
+//    assertEquals(0, image.getPixelAt(1, 1).getRed());
+//    assertEquals(255, image.getPixelAt(1, 1).getGreen());
+//    assertEquals(0, image.getPixelAt(1, 1).getBlue());
+
+    // Tests brighten
+    try {
+      new FileInputStream("res/a.bmp");
+    }
+    catch (FileNotFoundException e) {
+      fail("Fail");
+    }
+    reader = new StringReader("load res/a.bmp start " +
+            "brighten 5 start brighten " +
+            "save res/freb.bmp brighten done");
+    this.setCustomController(reader);
+    controller.start();
+    newReader = new StringReader("load res/freb.bmp brighter done");
+    emptyModel = new ModelImpl();
+    emptyView = new ImageProcessingViewImpl(emptyModel, new StringBuilder());
+    newController = new ControllerImpl(emptyModel, emptyView, newReader);
+    assertNull(emptyModel.getImageFrom("brighter"));
+    newController.start();
+    image = emptyModel.getImageFrom("brighter");
+    assertEquals(255, image.getPixelAt(0, 0).getRed());
+    assertEquals(255, image.getPixelAt(0, 0).getGreen());
+    assertEquals(255, image.getPixelAt(0, 0).getBlue());
+    assertEquals(5, image.getPixelAt(0, 1).getRed());
+    assertEquals(5, image.getPixelAt(0, 1).getGreen());
+    assertEquals(5, image.getPixelAt(0, 1).getBlue());
+    assertEquals(5, image.getPixelAt(1, 0).getRed());
+    assertEquals(255, image.getPixelAt(1, 0).getGreen());
+    assertEquals(5, image.getPixelAt(1, 0).getBlue());
+    assertEquals(255, image.getPixelAt(1, 1).getRed());
+    assertEquals(5, image.getPixelAt(1, 1).getGreen());
+    assertEquals(5, image.getPixelAt(1, 1).getBlue());
+  }
+
+  @Test
+  public void testInputs() {
+    StringReader reader = new StringReader("load res/original.ppm original " +
+            "brighten 30 original red done");
+    StringBuilder log = new StringBuilder();
+    ImageProcessingController c = new ControllerImpl(new MockModel(log), myView, reader);
+    c.start();
+    assertEquals("Add image into our model with tag original Image with 3 rows and 3 " +
+            "columns\nExposure image src: original image dest:" +
+            " red\n", log.toString());
+  }
+
+  @Test
+  public void testJPGLoad() {
+    assertEquals(null, myModel.getImageFrom("a"));
+    StringReader reader = new StringReader("load res/a.jpg a ");
+    this.setCustomController(reader);
+    controller.start();
+    IImage image = myModel.getImageFrom("a");
+    assertEquals(2, image.getRows());
+    assertEquals(2, image.getColumns());
+  }
+
+  @Test
+  public void testJPGFlipped() {
+    assertEquals(null, myModel.getImageFrom("a"));
+    StringReader reader = new StringReader("load res/a.jpg a " +
+            "flipped-vertical a b");
+    this.setCustomController(reader);
+    controller.start();
+    IImage imageA = myModel.getImageFrom("a");
+    assertEquals(2, imageA.getRows());
+    assertEquals(2, imageA.getColumns());
+    IImage imageB = myModel.getImageFrom("a");
+    assertEquals(2, imageB.getRows());
+    assertEquals(2, imageB.getColumns());
+    assertTrue(imageA.equals(imageB));
+  }
+
+  @Test
+  public void testJPGSaveAllFormats() {
+    try {
+      new FileInputStream("/Users/nezamjazayeri" +
+              "/Desktop/flipped.jpg");
+      fail("Fail");
+    }
+    catch (FileNotFoundException e) {
+      assertFalse(model.toString().equals(""));
+    }
+
+    try {
+      new FileInputStream("/Users/nezamjazayeri" +
+              "/Desktop/flipped.png");
+      fail("Fail");
+    }
+    catch (FileNotFoundException e) {
+      assertFalse(model.toString().equals(""));
+    }
+
+    try {
+      new FileInputStream("/Users/nezamjazayeri" +
+              "/Desktop/flipped.bmp");
+      fail("Fail");
+    }
+    catch (FileNotFoundException e) {
+      assertFalse(model.toString().equals(""));
+    }
+
+    try {
+      new FileInputStream("/Users/nezamjazayeri" +
+              "/Desktop/flipped.ppm");
+      fail("Fail");
+    }
+    catch (FileNotFoundException e) {
+      assertFalse(model.toString().equals(""));
+    }
+
+    StringReader reader = new StringReader("load res/a.jpg a " +
+            "flip-vertical a b " +
+            "save /Users/nezamjazayeri/Desktop/flipped.jpg b " +
+            "save /Users/nezamjazayeri/Desktop/flipped.png b " +
+            "save /Users/nezamjazayeri/Desktop/flipped.bmp b " +
+            "save /Users/nezamjazayeri/Desktop/flipped.ppm b ");
+    this.setCustomController(reader);
+    controller.start();
+    try {
+      new FileInputStream("/Users/nezamjazayeri" +
+              "/Desktop/flipped.jpg");
+    }
+    catch (FileNotFoundException e) {
+      fail("Fail");
+    }
+
+    try {
+      new FileInputStream("/Users/nezamjazayeri" +
+              "/Desktop/flipped.png");
+    }
+    catch (FileNotFoundException e) {
+      fail("Fail");
+    }
+
+    try {
+      new FileInputStream("/Users/nezamjazayeri" +
+              "/Desktop/flipped.bmp");
+    }
+    catch (FileNotFoundException e) {
+      fail("Fail");
+    }
+
+    try {
+      new FileInputStream("/Users/nezamjazayeri" +
+              "/Desktop/flipped.ppm");
+    }
+    catch (FileNotFoundException e) {
+      fail("Fail");
+    }
+  }
+
+  @Test
+  public void testPNGSaveAllFormats() {
+    try {
+      new FileInputStream("/Users/nezamjazayeri" +
+              "/Desktop/flipped2.jpg");
+      fail("Fail");
+    }
+    catch (FileNotFoundException e) {
+      assertFalse(model.toString().equals(""));
+    }
+
+    try {
+      new FileInputStream("/Users/nezamjazayeri" +
+              "/Desktop/flipped2.png");
+      fail("Fail");
+    }
+    catch (FileNotFoundException e) {
+      assertFalse(model.toString().equals(""));
+    }
+
+    try {
+      new FileInputStream("/Users/nezamjazayeri" +
+              "/Desktop/flipped2.bmp");
+      fail("Fail");
+    }
+    catch (FileNotFoundException e) {
+      assertFalse(model.toString().equals(""));
+    }
+
+    try {
+      new FileInputStream("/Users/nezamjazayeri" +
+              "/Desktop/flipped2.ppm");
+      fail("Fail");
+    }
+    catch (FileNotFoundException e) {
+      assertFalse(model.toString().equals(""));
+    }
+
+    StringReader reader = new StringReader("load res/a.png a " +
+            "greyscale-luma a b " +
+            "save /Users/nezamjazayeri/Desktop/flipped2.jpg b " +
+            "save /Users/nezamjazayeri/Desktop/flipped2.png b " +
+            "save /Users/nezamjazayeri/Desktop/flipped2.bmp b " +
+            "save /Users/nezamjazayeri/Desktop/flipped2.ppm b ");
+    this.setCustomController(reader);
+    controller.start();
+    try {
+      new FileInputStream("/Users/nezamjazayeri" +
+              "/Desktop/flipped2.jpg");
+    }
+    catch (FileNotFoundException e) {
+      fail("Fail");
+    }
+
+    try {
+      new FileInputStream("/Users/nezamjazayeri" +
+              "/Desktop/flipped2.png");
+    }
+    catch (FileNotFoundException e) {
+      fail("Fail");
+    }
+
+    try {
+      new FileInputStream("/Users/nezamjazayeri" +
+              "/Desktop/flipped2.bmp");
+    }
+    catch (FileNotFoundException e) {
+      fail("Fail");
+    }
+
+    try {
+      new FileInputStream("/Users/nezamjazayeri" +
+              "/Desktop/flipped2.ppm");
+    }
+    catch (FileNotFoundException e) {
+      fail("Fail");
+    }
+  }
+
+  @Test
+  public void testBMPSaveAllFormats() {
+    try {
+      new FileInputStream("/Users/nezamjazayeri" +
+              "/Desktop/flipped3.jpg");
+      fail("Fail");
+    }
+    catch (FileNotFoundException e) {
+      assertFalse(model.toString().equals(""));
+    }
+
+    try {
+      new FileInputStream("/Users/nezamjazayeri" +
+              "/Desktop/flipped3.png");
+      fail("Fail");
+    }
+    catch (FileNotFoundException e) {
+      assertFalse(model.toString().equals(""));
+    }
+
+    try {
+      new FileInputStream("/Users/nezamjazayeri" +
+              "/Desktop/flipped3.bmp");
+      fail("Fail");
+    }
+    catch (FileNotFoundException e) {
+      assertFalse(model.toString().equals(""));
+    }
+
+    try {
+      new FileInputStream("/Users/nezamjazayeri" +
+              "/Desktop/flipped3.ppm");
+      fail("Fail");
+    }
+    catch (FileNotFoundException e) {
+      assertFalse(model.toString().equals(""));
+    }
+
+    StringReader reader = new StringReader("load res/a.bmp a " +
+            "flip-horizontal a b " +
+            "save /Users/nezamjazayeri/Desktop/flipped3.jpg b " +
+            "save /Users/nezamjazayeri/Desktop/flipped3.png b " +
+            "save /Users/nezamjazayeri/Desktop/flipped3.bmp b " +
+            "save /Users/nezamjazayeri/Desktop/flipped3.ppm b ");
+    this.setCustomController(reader);
+    controller.start();
+    try {
+      new FileInputStream("/Users/nezamjazayeri" +
+              "/Desktop/flipped3.jpg");
+    }
+    catch (FileNotFoundException e) {
+      fail("Fail");
+    }
+
+    try {
+      new FileInputStream("/Users/nezamjazayeri" +
+              "/Desktop/flipped3.png");
+    }
+    catch (FileNotFoundException e) {
+      fail("Fail");
+    }
+
+    try {
+      new FileInputStream("/Users/nezamjazayeri" +
+              "/Desktop/flipped3.bmp");
+    }
+    catch (FileNotFoundException e) {
+      fail("Fail");
+    }
+
+    try {
+      new FileInputStream("/Users/nezamjazayeri" +
+              "/Desktop/flipped3.ppm");
+    }
+    catch (FileNotFoundException e) {
+      fail("Fail");
+    }
+  }
+
+  @Test
+  public void testPPMSaveAllFormats() {
+    try {
+      new FileInputStream("/Users/nezamjazayeri" +
+              "/Desktop/flipped4.jpg");
+      fail("Fail");
+    }
+    catch (FileNotFoundException e) {
+      assertFalse(model.toString().equals(""));
+    }
+
+    try {
+      new FileInputStream("/Users/nezamjazayeri" +
+              "/Desktop/flipped4.png");
+      fail("Fail");
+    }
+    catch (FileNotFoundException e) {
+      assertFalse(model.toString().equals(""));
+    }
+
+    try {
+      new FileInputStream("/Users/nezamjazayeri" +
+              "/Desktop/flipped4.bmp");
+      fail("Fail");
+    }
+    catch (FileNotFoundException e) {
+      assertFalse(model.toString().equals(""));
+    }
+
+    try {
+      new FileInputStream("/Users/nezamjazayeri" +
+              "/Desktop/flipped4.ppm");
+      fail("Fail");
+    }
+    catch (FileNotFoundException e) {
+      assertFalse(model.toString().equals(""));
+    }
+
+    StringReader reader = new StringReader("load res/a.ppm a " +
+            "greyscale-luma a b " +
+            "save /Users/nezamjazayeri/Desktop/flipped4.jpg b " +
+            "save /Users/nezamjazayeri/Desktop/flipped4.png b " +
+            "save /Users/nezamjazayeri/Desktop/flipped4.bmp b " +
+            "save /Users/nezamjazayeri/Desktop/flipped4.ppm b ");
+    this.setCustomController(reader);
+    controller.start();
+    try {
+      new FileInputStream("/Users/nezamjazayeri" +
+              "/Desktop/flipped4.jpg");
+    }
+    catch (FileNotFoundException e) {
+      fail("Fail");
+    }
+
+    try {
+      new FileInputStream("/Users/nezamjazayeri" +
+              "/Desktop/flipped4.png");
+    }
+    catch (FileNotFoundException e) {
+      fail("Fail");
+    }
+
+    try {
+      new FileInputStream("/Users/nezamjazayeri" +
+              "/Desktop/flipped4.bmp");
+    }
+    catch (FileNotFoundException e) {
+      fail("Fail");
+    }
+
+    try {
+      new FileInputStream("/Users/nezamjazayeri" +
+              "/Desktop/flipped4.ppm");
+    }
+    catch (FileNotFoundException e) {
+      fail("Fail");
+    }
+  }
+
+  @Test
+  public void testSharpen() {
+    Readable r = new StringReader("load reshw5/a.png original " +
+            "sharpen original sharp " +
+            "save /Users/nezamjazayeri/Desktop/sharp.png sharp");
+    ImageProcessingModel m = new ModelImpl();
+    ImageProcessingView v = new ImageProcessingViewImpl(m, new StringBuilder());
+
+    new ControllerImpl(m, v, r).start();
+    IImage image = m.getImageFrom("sharp");
+
+    checkPixel(image.getPixelAt(0, 0), 255, 0, 0, 255);
+    checkPixel(image.getPixelAt(2, 1), 255, 221, 255, 255);
+    checkPixel(image.getPixelAt(1, 4), 0, 225, 13, 255);
+    checkPixel(image.getPixelAt(4, 4), 0, 0, 0, 255);
+    assertEquals(8, image.getRows());
+    assertEquals(8, image.getRows());
+  }
+
+  @Test
+  public void testBlur() {
+    Readable r = new StringReader("load reshw5/a.png original " +
+            "blur original blur " +
+            "save /Users/nezamjazayeri/Desktop/blur.png blur");
+    ImageProcessingModel m = new ModelImpl();
+    ImageProcessingView v = new ImageProcessingViewImpl(m, new StringBuilder());
+
+    new ControllerImpl(m, v, r).start();
+    IImage image = m.getImageFrom("blur");
+
+    checkPixel(image.getPixelAt(0, 0), 255, 1, 1, 255);
+    checkPixel(image.getPixelAt(4, 0), 66, 255, 66, 255);
+    checkPixel(image.getPixelAt(0, 4), 13, 208, 13, 255);
+    checkPixel(image.getPixelAt(4, 4), 65, 3, 50, 255);
+    assertEquals(8, image.getRows());
+    assertEquals(8, image.getRows());
+  }
+
+
+  @Test
+  public void testSepia() {
+    StringReader reader = new StringReader("load reshw5/a.png x ");
+    this.setCustomController(reader);
+    controller.start();
+    IImage image = myModel.getImageFrom("x");
+
+    image = image.transform(sepia);
+    checkPixel(image.getPixelAt(0, 0), 100, 89, 69, 255);
+    checkPixel(image.getPixelAt(4, 0), 215, 192, 149, 255);
+    checkPixel(image.getPixelAt(0, 4), 206, 184, 143, 255);
+    checkPixel(image.getPixelAt(4, 4), 3, 2, 2, 255);
+    assertEquals(8, image.getRows());
+    assertEquals(8, image.getRows());
+  }
+}
