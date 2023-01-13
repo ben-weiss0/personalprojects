@@ -1,0 +1,45 @@
+package imageprocessor.controller.commanddesign.transformations;
+
+import java.util.Scanner;
+
+import imageprocessor.controller.commanddesign.Commands;
+import imageprocessor.model.ImageProcessingModel;
+
+/**
+ * Abstract class that helps with the constructors of image transformations in the model.
+ */
+public abstract class AbstractTransformCommand implements Commands {
+  private Scanner sc;
+  protected String src;
+  protected String dest;
+
+  /**
+   * Constructor.
+   * @param sc Scans the readable and finds the image we want to make a transformation from
+   *           ({@code src}) and gets the string reference we want to refer to the new
+   *           transformed image with.
+   * @throws IllegalStateException when the readable has no more elements to read from.
+   */
+  public AbstractTransformCommand(Scanner sc) throws IllegalStateException {
+    this.sc = sc;
+  }
+
+  protected void parseScanner() {
+    if (sc.hasNext()) {
+      src = sc.next();
+    }
+    if (sc.hasNext()) {
+      dest = sc.next();
+    }
+  }
+
+  /**
+   * Applies transformation to the image
+   * @param model our storage system of all images. Each object will be able to access different
+   *              images inside the model and use them to manipulate the model.
+   */
+  @Override
+  public void apply(ImageProcessingModel model) {
+    parseScanner();
+  }
+}
