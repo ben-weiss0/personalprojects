@@ -1,0 +1,64 @@
+import imageprocessor.model.IImage;
+import imageprocessor.view.ViewForGUI;
+
+import javax.swing.*;
+import java.awt.image.BufferedImage;
+
+/**
+ * Mock GUI View for testing.
+ */
+public class MockGUIViewBlueGreyScaleAndLoad implements ViewForGUI {
+    MockLabel label;
+    BufferedImage image;
+    IImage iimage;
+    StringBuilder log;
+
+    /**
+     * Constructor.
+     */
+    public MockGUIViewBlueGreyScaleAndLoad() {
+        this.label = new MockLabel();
+        this.image =  new MockImage();
+        this.iimage = new MockIImage(this.image);
+        log = new StringBuilder();
+    }
+
+    @Override
+    public void setLabelText(String text, JLabel label) {
+        label.setText(text);
+    }
+
+    @Override
+    public String getLabelText(JLabel label) {
+        return label.getText();
+    }
+
+    @Override
+    public BufferedImage getImage() {
+        return this.image;
+    }
+
+    @Override
+    public void refresh(BufferedImage image) {
+        this.image = image;
+        this.iimage = new MockIImage(this.image);
+        log.append("Image log: " + new MockImage().toString() + "\n");
+        log.append("IImage log: " + this.iimage.toString() + "\n");
+        log.append("greyscale blue");
+    }
+
+    @Override
+    public void addMessage(String text, int messageType) {
+        if (messageType == 1) {
+            log.append("fail");
+        }
+        else {
+            log.append("jpg changed");
+        }
+    }
+
+    @Override
+    public String toString() {
+        return log.toString();
+    }
+}
