@@ -1,0 +1,17 @@
+package imageprocessor.model.operations;
+
+import imageprocessor.model.IImage;
+import imageprocessor.model.operations.pixel.PixelGreyscaleIntensity;
+import imageprocessor.model.operations.pixel.PixelOperations;
+
+/**
+ * Function object to greyscale an image by its intensity.
+ */
+public class GreyscaleIntensity implements Operations {
+
+  @Override
+  public IImage apply(IImage image) {
+    PixelOperations o = new PixelGreyscaleIntensity();
+    return new FullImageOperation(o).apply(image);
+  }
+}
