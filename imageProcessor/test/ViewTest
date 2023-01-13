@@ -1,0 +1,152 @@
+import org.junit.Before;
+import org.junit.Test;
+
+import java.io.IOException;
+
+import imageprocessor.model.ImageProcessingModel;
+import imageprocessor.model.ModelImpl;
+import imageprocessor.view.ImageProcessingView;
+import imageprocessor.view.ImageProcessingViewImpl;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+
+/**
+ * Represents tests and examples for the {@code ImageProcessingView} interface.
+ */
+public class ViewTest extends StorageModelTest {
+  protected ImageProcessingModel emptyModel;
+  protected ImageProcessingView emptyView;
+
+  @Before
+  public void setAll() {
+    super.setAll();
+    this.emptyModel = new ModelImpl();
+    this.emptyView = new ImageProcessingViewImpl(this.emptyModel);
+  }
+
+  /**
+   * Tests exceptions thrown by {@code ImageProcessingViewImpl} constructors.
+   */
+  @Test
+  public void testConstructorExceptions() {
+    try {
+      new ImageProcessingViewImpl(null);
+    } catch (IllegalArgumentException e) {
+      assertEquals("Cannot be null", e.getMessage());
+    }
+    // Passed in null model
+    try {
+      new ImageProcessingViewImpl(null, System.out);
+    } catch (IllegalArgumentException e) {
+      assertEquals("Cannot be null", e.getMessage());
+    }
+    // Passed in null Appendable location
+    try {
+      new ImageProcessingViewImpl(this.emptyModel, null);
+    } catch (IllegalArgumentException e) {
+      assertEquals("Cannot be null", e.getMessage());
+    }
+    // Passed in null model and Appendable location
+    try {
+      new ImageProcessingViewImpl(null, null);
+    } catch (IllegalArgumentException e) {
+      assertEquals("Cannot be null", e.getMessage());
+    }
+  }
+
+  /**
+   * Tests the {@code renderImageState()} and {@code renderMessage()} methods.
+   */
+  @Test
+  public void testRenderMessage() {
+
+    // Adding images to the model to test for states of the images
+    this.emptyModel.add("image1", this.blueImage);
+    this.emptyModel.add("image2", this.greenImage);
+    this.emptyModel.add("image3", this.mixedImage);
+    Appendable sb = new StringBuilder();
+    this.emptyView = new ImageProcessingViewImpl(this.emptyModel, sb);
+
+
+    try {
+      this.emptyView.renderMessage("Hello\n");
+      assertEquals("Hello\n", sb.toString());
+    } catch (IOException e) {
+      fail("Shouldn't throw exception");
+    }
+    try {
+      this.emptyView.renderImageState("image1");
+      assertEquals("Hello\n" +
+              "Width of image: 2\n" +
+              "Height of image: 2\n" +
+              "Maximum value of a color in this file (usually 255): 255\n" +
+              "Color of pixel (0,0): 0,0,255\n" +
+              "Color of pixel (1,0): 0,0,255\n" +
+              "Color of pixel (0,1): 0,0,255\n" +
+              "Color of pixel (1,1): 0,0,255\n", sb.toString());
+    } catch (IOException e) {
+      fail("Shouldn't throw exception");
+    }
+  }
+
+  @Test
+  public void testImageState() {
+    try {
+      StringBuilder sb = new StringBuilder();
+      ImageProcessingView newView = new ImageProcessingViewImpl(this.model, sb);
+      newView.renderImageState("mixed");
+      assertEquals("Width of image: 3\n" +
+              "Height of image: 3\n" +
+              "Maximum value of a color in this file (usually 255): 255\n" +
+              "Color of pixel (0,0): 0,0,255\n" +
+              "Color of pixel (1,0): 255,0,0\n" +
+              "Color of pixel (2,0): 255,255,0\n" +
+              "Color of pixel (0,1): 252,252,252\n" +
+              "Color of pixel (1,1): 187,75,230\n" +
+              "Color of pixel (2,1): 0,20,20\n" +
+              "Color of pixel (0,2): 255,20,20\n" +
+              "Color of pixel (1,2): 177,65,220\n" +
+              "Color of pixel (2,2): 0,255,0\n", sb.toString());
+    } catch (IOException e) {
+      fail("Shouldn't throw exception");
+    }
+  }
+
+  @Test
+  public void testImageStateSmallerMinimum() {
+    StringBuilder sb = new StringBuilder();
+    ImageProcessingModel model = new ModelImpl();
+    model.add("smaller", this.lowerMinPixelImage);
+    ImageProcessingView newView = new ImageProcessingViewImpl(model, sb);
+    try {
+      newView.renderImageState("smaller");
+      assertEquals(
+              "Maximum value of a color in this file (usually 255): 64",
+              sb.toString().split("\n")[2]);
+    } catch (IOException e) {
+      fail("Shouldn't throw exception");
+    }
+  }
+
+  @Test
+  public void testRenderToCorrupt() {
+    Appendable appendable = new MockAppendable();
+    emptyModel.add("smaller", this.lowerMinPixelImage);
+    ImageProcessingView newView = new ImageProcessingViewImpl(emptyModel, appendable);
+    try {
+      newView.renderImageState("smaller");
+      fail("Should not be able to render");
+    }
+    catch (IOException e) {
+      assertEquals("Corrupt Object creates IO Exception", e.getMessage());
+    }
+    try {
+      newView.renderMessage("render this");
+      fail("Should not be able to render");
+    }
+    catch (IOException e) {
+      assertEquals("Corrupt Object creates IO Exception", e.getMessage());
+    }
+  }
+}
