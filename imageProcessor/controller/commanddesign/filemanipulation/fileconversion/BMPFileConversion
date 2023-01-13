@@ -1,0 +1,14 @@
+package imageprocessor.controller.commanddesign.filemanipulation.fileconversion;
+
+import java.awt.image.BufferedImage;
+
+/**
+ * Conversion between BMP files, buffered images, and IImages.
+ */
+public class BMPFileConversion extends AbstractFileConversion {
+    @Override
+    protected int getType() {
+        return BufferedImage.TYPE_3BYTE_BGR;
+
+    }
+}
