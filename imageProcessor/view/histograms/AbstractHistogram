@@ -1,0 +1,44 @@
+package imageprocessor.view.histograms;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import imageprocessor.model.IImage;
+import imageprocessor.model.IPixel;
+import imageprocessor.model.operations.Operations;
+
+/**
+ * Abstract class for histogram creating operations.
+ */
+public abstract class AbstractHistogram implements HistogramType {
+
+  private Map<Integer, Integer> generateHashMap(IImage image) {
+    Map<Integer, Integer> map = new HashMap<>();
+    for (int i = 0; i <= image.getMaxValue(); i++) {
+      map.put(i, 0);
+    }
+    return map;
+  }
+
+  /**
+   * This method is the function object call. It will take a backend representation of our image
+   * and return the map of the keys (0, 1, ..., 255) to their values, the number of pixels with said key.
+   * @param image the function argument.
+   * @return a map of pixel values to frequencies.
+   */
+  @Override
+  public Map<Integer, Integer> apply(IImage image) {
+
+    IImage img = image.transform(this.selectGreyScale());
+
+    Map<Integer, Integer> map = this.generateHashMap(img);
+    for (int row = 0; row < img.getRows(); row++) {
+      for (int col = 0; col < img.getColumns(); col++) {
+        IPixel pixel = img.getPixelAt(row, col);
+        map.replace(pixel.getValue(), map.get(pixel.getValue()) + 1);
+      }
+    }
+    return map;
+  }
+  protected abstract Operations selectGreyScale();
+}
