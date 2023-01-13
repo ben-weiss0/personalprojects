@@ -1,0 +1,25 @@
+package imageprocessor.controller.listeners;
+
+import imageprocessor.model.operations.Operations;
+import imageprocessor.model.operations.SimpleSharpen;
+import imageprocessor.view.ViewForGUI;
+
+/**
+ * Action listener for sharpen button.
+ */
+public class SharpenActionListener extends AbstractTransformationListener {
+    /**
+     * Constructor.
+     * @param board the working view.
+     */
+    public SharpenActionListener(ViewForGUI board) {
+        super(board);
+    }
+
+    @Override
+    protected Operations getCommand() {
+        return new SimpleSharpen();
+    }
+
+
+}
