@@ -1,0 +1,316 @@
+package imageprocessor.view;
+
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.util.Map;
+
+import javax.swing.*;
+
+import imageprocessor.controller.commanddesign.filemanipulation.fileconversion.PNGFileConversion;
+import imageprocessor.controller.listeners.*;
+import imageprocessor.model.IImage;
+import imageprocessor.view.histograms.*;
+
+
+/**
+ * Represents a {@code imageprocessor.view.MyBoard}, which is the foundation of the program's GUI. The class has
+ * several panels and text fields that compose the user interface, including the buttons that
+ * are created in its constructor.
+ */
+public class MyBoard extends JFrame implements ViewForGUI {
+    private IImage imageToEdit;
+    private final JLabel imageLabel;
+    private final JPanel histogramPanel;
+
+    /**
+     * Constructor for {@code imageprocessor.view.MyBoard}, which does not take in any arguments.
+     */
+    public MyBoard() {
+        super();
+        this.setTitle("Image Processing Software");
+        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        // This automatically makes it size of the user's screen which is pretty dope
+        this.setSize(new Dimension(Toolkit.getDefaultToolkit().getScreenSize()));
+
+        JPanel mainPanel = new JPanel();
+        mainPanel.setPreferredSize(new Dimension(this.getWidth(), this.getHeight()));
+        mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.PAGE_AXIS));
+        JScrollPane scrollMain = new JScrollPane(mainPanel);
+        add(scrollMain);
+
+        // Top panel with the loading place and preview for the image being selected
+        JPanel loadPanel = new JPanel();
+        loadPanel.setPreferredSize(new Dimension(mainPanel.getPreferredSize().width,
+                mainPanel.getPreferredSize().height / 12));
+        loadPanel.setLayout(new BoxLayout(loadPanel, BoxLayout.Y_AXIS));
+        mainPanel.add(loadPanel);
+
+        JLabel fileLoadPath = new JLabel();
+        fileLoadPath.setText("Path");
+        fileLoadPath.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        // Button to choose file
+        JButton fileOpenButton = new JButton();
+        fileOpenButton.setText("Choose a file");
+        fileOpenButton.addActionListener(new LoadFileChooserListener(this, fileLoadPath));
+        fileOpenButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        loadPanel.add(fileOpenButton);
+
+        // Feedback explaining the file chosen
+
+        loadPanel.add(fileLoadPath);
+
+        // Button to add to our model
+        JButton loadToModelButton = new JButton();
+        loadToModelButton.setText("Load!");
+        fileOpenButton.setActionCommand("Go");
+        loadToModelButton.addActionListener(new LoadListener(this, fileLoadPath));
+        loadToModelButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        loadPanel.add(loadToModelButton);
+
+    /*
+    Add Panel with two images
+     */
+
+        JPanel imagePanel = new JPanel();
+        imagePanel.setPreferredSize(new Dimension(mainPanel.getPreferredSize().width,
+                3 * mainPanel.getPreferredSize().height / 4));
+//        imagePanel.setPreferredSize(new Dimension(600, 1000));
+        imagePanel.setLayout(new BoxLayout(imagePanel, BoxLayout.X_AXIS));
+        mainPanel.add(imagePanel);
+
+        imageLabel = new JLabel();
+        imageLabel.setPreferredSize(new Dimension(3 * imagePanel.getPreferredSize().width / 4,
+                imagePanel.getPreferredSize().height));
+//        imageLabel.setPreferredSize(new Dimension(600, 800));
+        imageLabel.setHorizontalAlignment(0);
+        imageLabel.setVerticalAlignment(0);
+        JScrollPane scrollableImage = new JScrollPane(imageLabel);
+        imagePanel.add(scrollableImage);
+
+        histogramPanel = new JPanel();
+        histogramPanel.setPreferredSize(new Dimension(imagePanel.getPreferredSize().width / 4,
+                imagePanel.getPreferredSize().height));
+        histogramPanel.setLayout(new GridLayout(1, 0));
+        imagePanel.add(histogramPanel);
+
+    /*
+    Buttons
+     */
+        JPanel buttons = new JPanel();
+        buttons.setPreferredSize(new Dimension(mainPanel.getPreferredSize().width, mainPanel.getPreferredSize().height / 12));
+        buttons.setLayout(new GridLayout(1, 0));
+        mainPanel.add(buttons);
+
+        // Button that allows client to flip image horizontally
+        JButton flipHorizontally = new JButton("Flip Horizontally");
+        flipHorizontally.addActionListener(new FlipHorizontalActionListener(this));
+        buttons.add(flipHorizontally);
+
+        // Button that allows client to flip image vertically
+        JButton flipVertically = new JButton("Flip Vertically");
+        flipVertically.addActionListener(new FlipVerticalActionListener(this));
+        buttons.add(flipVertically);
+
+        // Button that allows client to brighten image
+        JButton brighten = new JButton("Brighten");
+        brighten.addActionListener(new BrightenActionListener(this));
+        buttons.add(brighten);
+
+        // Button that allows client to darken image
+        JButton darken = new JButton("Darken");
+        darken.addActionListener(new DarkenActionListener(this));
+        buttons.add(darken);
+
+        // Button that allows client to greyscale image by value
+        JButton greyscaleValue = new JButton("Greyscale Value");
+        greyscaleValue.addActionListener(new GreyScaleValueActionListener(this));
+        buttons.add(greyscaleValue);
+
+        // Button that allows client to greyscale image by intensity
+        JButton greyscaleIntensity = new JButton("Greyscale Intensity");
+        greyscaleIntensity.addActionListener(new GreyScaleIntensityActionListener(this));
+        buttons.add(greyscaleIntensity);
+
+        // Button that allows client to greyscale image by luma
+        JButton greyscaleLuma = new JButton("Greyscale Luma");
+        greyscaleLuma.addActionListener(new GreyScaleLumaActionListener(this));
+        buttons.add(greyscaleLuma);
+
+        // Button that allows client to greyscale image by red value
+        JButton greyscaleRed = new JButton("Greyscale Red");
+        greyscaleRed.addActionListener(new GreyScaleRedActionListener(this));
+        buttons.add(greyscaleRed);
+
+        // Button that allows client to greyscale image by green value
+        JButton greyscaleGreen = new JButton("Greyscale Green");
+        greyscaleGreen.addActionListener(new GreyScaleGreenActionListener(this));
+        buttons.add(greyscaleGreen);
+
+        // Button that allows client to greyscale image by blue value
+        JButton greyscaleBlue = new JButton("Greyscale Blue");
+        greyscaleBlue.addActionListener(new GreyScaleBlueActionListener(this));
+        buttons.add(greyscaleBlue);
+
+        // Button that allows client to blur an image
+        JButton blur = new JButton("Blur");
+        blur.addActionListener(new BlurActionListener(this));
+        buttons.add(blur);
+
+        // Button that allows client to sharpen an image
+        JButton sharpen = new JButton("Sharpen");
+        sharpen.addActionListener(new SharpenActionListener(this));
+        buttons.add(sharpen);
+
+        // Button that allows client to apply sepia to an image
+        JButton sepia = new JButton("Sepia");
+        sepia.addActionListener(new SepiaActionListener(this));
+        buttons.add(sepia);
+
+    /*
+    Saving portion
+     */
+        // Top panel with the loading place and preview for the image being selected
+        JPanel savePanel = new JPanel();
+        savePanel.setPreferredSize(new Dimension(mainPanel.getPreferredSize().width, mainPanel.getPreferredSize().height / 12));
+        savePanel.setBorder(BorderFactory.createTitledBorder("Saving zone"));
+        savePanel.setLayout(new GridLayout(1, 0));
+        mainPanel.add(savePanel);
+
+        JLabel fileSavePath = new JLabel();
+        fileSavePath.setHorizontalAlignment(SwingConstants.CENTER);
+        fileSavePath.setVerticalAlignment(SwingConstants.CENTER);
+        fileSavePath.setText("File Save Path");
+
+        // Button to choose file
+        JButton fileSaveButton = new JButton();
+        fileSaveButton.setText("Choose a file");
+        fileSaveButton.setActionCommand("File chosen");
+        fileSaveButton.addActionListener(new SaveFileChooserListener(this, fileSavePath));
+        fileSaveButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        savePanel.add(fileSaveButton);
+
+        // Feedback explaining the file chosen
+
+        savePanel.add(fileSavePath);
+
+        // Button to add to our model
+        JButton saveButton = new JButton();
+        saveButton.setText("Save!");
+        saveButton.addActionListener(new SaveListener(this, fileSavePath));
+        saveButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        savePanel.add(saveButton);
+
+    }
+
+    @Override
+    public void setLabelText(String text, JLabel label) {
+        label.setText(text);
+    }
+
+    @Override
+    public String getLabelText(JLabel label) {
+        return label.getText();
+    }
+
+    @Override
+    public BufferedImage getImage() {
+        return new PNGFileConversion().iImageToBufferedImage(this.imageToEdit);
+    }
+
+    @Override
+    public void refresh(BufferedImage image) {
+        this.imageToEdit = new PNGFileConversion().bufferedToIImage(image);
+        this.imageLabel.removeAll();
+        BufferedImage img = image;
+        ImageIcon icon = new ImageIcon(img);
+        this.imageLabel.setIcon(icon);
+        setHistogram();
+    }
+
+    private void setHistogram() {
+        histogramPanel.removeAll();
+        histogramPanel.revalidate();
+
+        Map<Integer, Integer> redHistogram = histogram(new RedHistogram());
+        Map<Integer, Integer> greenHistogram = histogram(new GreenHistogram());
+        Map<Integer, Integer> blueHistogram = histogram(new BlueHistogram());
+        Map<Integer, Integer> intensityHistogram = histogram(new IntensityHistogram());
+
+        int max = maxComponent(redHistogram, greenHistogram, blueHistogram);
+        for (int val = 0; val <= this.imageToEdit.getMaxValue(); val++) {
+            int red = redHistogram.get(val);
+            int green = greenHistogram.get(val);
+            int blue = blueHistogram.get(val);
+            int intensity = intensityHistogram.get(val);
+
+            int width = histogramPanel.getWidth() / 256;
+            int height = 7 * histogramPanel.getHeight() / 8;
+
+            BufferedImage redBar = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+            BufferedImage greenBar = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+            BufferedImage blueBar = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+            BufferedImage intensityBar = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+
+            int capRed = height - (int) (red * height * 1.0 / max);
+            int capGreen = height - (int) (green * height * 1.0 / max);
+            int capBlue = height - (int) (blue * height * 1.0 / max);
+            int capIntensity = height - (int) (intensity * height * 1.0 / max);
+
+            fillBar(redBar, capRed, Color.red);
+            fillBar(greenBar, capGreen, Color.green);
+            fillBar(blueBar, capBlue, Color.blue);
+            fillBar(intensityBar, capIntensity, Color.gray);
+
+            BufferedImage combined = combineImages(redBar, greenBar, blueBar, intensityBar);
+
+            JLabel label = new JLabel();
+            label.setIcon(new ImageIcon(combined));
+
+            histogramPanel.add(label);
+        }
+    }
+
+    private BufferedImage combineImages(BufferedImage... images) {
+        int width = images[0].getWidth();
+        int height = images[0].getHeight();
+
+        BufferedImage newImg = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g = newImg.createGraphics();
+
+        g.setComposite(AlphaComposite.SrcOver);
+        float alpha = 0.25f;
+        for (BufferedImage img : images) {
+            g.setComposite(AlphaComposite.SrcOver.derive(alpha));
+            g.drawImage(img, 0, 0, null);
+        }
+        return newImg;
+    }
+
+    private int maxComponent(Map<Integer, Integer> redHistogram, Map<Integer,
+            Integer> greenHistogram, Map<Integer, Integer> blueHistogram) {
+        int max = 0;
+        for (int val = 0; val <= this.imageToEdit.getMaxValue(); val++) {
+            max = Math.max(max, Math.max(redHistogram.get(val), Math.max(greenHistogram.get(val), blueHistogram.get(val))));
+        }
+        return max;
+    }
+
+    private void fillBar(BufferedImage image, int cap, Color c) {
+        for (int y = image.getHeight() - 1; y >= cap; y--) {
+            for (int x = 0; x < image.getWidth(); x++) {
+                int ARGB = new Color(c.getRed(), c.getGreen(), c.getBlue(), 255).getRGB();
+                image.setRGB(x, y, ARGB);
+            }
+        }
+    }
+
+    private Map<Integer, Integer> histogram(HistogramType type) {
+        return type.apply(imageToEdit);
+    }
+
+    public void addMessage(String text, int messageType) {
+        JOptionPane.showMessageDialog(this,
+                text, "Popup", messageType);
+    }
+}
