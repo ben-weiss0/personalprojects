@@ -1,0 +1,185 @@
+import org.junit.Before;
+import org.junit.Test;
+
+import java.util.Random;
+
+import imageprocessor.model.IPixel;
+import imageprocessor.model.PixelImpl;
+
+import static org.junit.Assert.assertEquals;
+
+/**
+ * Testing pixels.
+ */
+public class PixelModelTest {
+
+  protected IPixel redPixel;
+  protected IPixel greenPixel;
+  protected IPixel bluePixel;
+  protected IPixel yellowPixel;
+  protected IPixel randomPixel;
+  protected IPixel lowerMinPixel;
+  protected IPixel clampUpper;
+  protected IPixel clampLower;
+  protected IPixel allSame;
+  protected IPixel incrementAll;
+
+  /**
+   * Preconditions.
+   */
+  @Before
+  public void setAll() {
+
+    redPixel = new PixelImpl.PixelBuilder().red(255).build();
+    greenPixel = new PixelImpl.PixelBuilder().green(255).build();
+    bluePixel = new PixelImpl.PixelBuilder().blue(255).build();
+    yellowPixel = new PixelImpl.PixelBuilder().red(255).green(255).build();
+    Random random = new Random(2);
+    randomPixel = new PixelImpl.PixelBuilder()
+            .red(random.nextInt(256))
+            .green(random.nextInt(256))
+            .blue(random.nextInt(256))
+            .build();
+    lowerMinPixel = new PixelImpl.PixelBuilder()
+            .maxValue(64)
+            .red(random.nextInt(64))
+            .green(random.nextInt(64))
+            .blue(random.nextInt(64))
+            .build();
+    clampUpper = new PixelImpl.PixelBuilder()
+            .red(270)
+            .blue(20)
+            .green(20)
+            .build();
+    clampLower = new PixelImpl.PixelBuilder()
+            .red(-6)
+            .blue(20)
+            .green(20)
+            .build();
+    allSame = new PixelImpl.PixelBuilder()
+            .setAll(random.nextInt(256))
+            .build();
+    incrementAll = new PixelImpl.PixelBuilder()
+            .red(randomPixel.getRed())
+            .green(randomPixel.getGreen())
+            .blue(randomPixel.getBlue())
+            .changeAll(-10)
+            .build();
+  }
+
+  protected void checkPixel(IPixel pixel, int red, int green, int blue, int max) {
+    assertEquals(red, pixel.getRed());
+    assertEquals(green, pixel.getGreen());
+    assertEquals(blue, pixel.getBlue());
+    assertEquals(max, pixel.getMaxValue());
+  }
+
+  @Test
+  public void testSuccessConstructors() {
+    checkPixel(redPixel, 255, 0, 0, 255);
+    checkPixel(greenPixel, 0, 255, 0, 255);
+    checkPixel(bluePixel, 0, 0, 255, 255);
+    checkPixel(yellowPixel, 255, 255, 0, 255);
+    checkPixel(randomPixel, 187, 75, 230, 255);
+    checkPixel(lowerMinPixel, 0, 31, 54, 64);
+    checkPixel(clampUpper, 255, 20, 20, 255);
+    checkPixel(clampLower, 0, 20, 20, 255);
+    checkPixel(allSame, 252, 252, 252, 255);
+    checkPixel(incrementAll, 177, 65, 220, 255);
+    assertEquals(255, redPixel.getRed());
+  }
+
+  @Test
+  public void testGetRed() {
+    assertEquals(255, redPixel.getRed());
+    assertEquals(0, greenPixel.getRed());
+    assertEquals(0, bluePixel.getRed());
+    assertEquals(255, yellowPixel.getRed());
+    assertEquals(187, randomPixel.getRed());
+    assertEquals(0, lowerMinPixel.getRed());
+    assertEquals(255, clampUpper.getRed());
+    assertEquals(0, clampLower.getRed());
+    assertEquals(252, allSame.getRed());
+    assertEquals(177, incrementAll.getRed());
+  }
+
+  @Test
+  public void testGetGreen() {
+    assertEquals(0, redPixel.getGreen());
+    assertEquals(255, greenPixel.getGreen());
+    assertEquals(0, bluePixel.getGreen());
+    assertEquals(255, yellowPixel.getGreen());
+    assertEquals(75, randomPixel.getGreen());
+    assertEquals(31, lowerMinPixel.getGreen());
+    assertEquals(20, clampUpper.getGreen());
+    assertEquals(20, clampLower.getGreen());
+    assertEquals(252, allSame.getGreen());
+    assertEquals(65, incrementAll.getGreen());
+  }
+
+  @Test
+  public void testGetBlue() {
+    assertEquals(0, redPixel.getBlue());
+    assertEquals(0, greenPixel.getBlue());
+    assertEquals(255, bluePixel.getBlue());
+    assertEquals(0, yellowPixel.getBlue());
+    assertEquals(230, randomPixel.getBlue());
+    assertEquals(54, lowerMinPixel.getBlue());
+    assertEquals(20, clampUpper.getBlue());
+    assertEquals(20, clampLower.getBlue());
+    assertEquals(252, allSame.getBlue());
+    assertEquals(220, incrementAll.getBlue());
+  }
+
+  @Test
+  public void testGetMax() {
+    assertEquals(255, redPixel.getMaxValue());
+    assertEquals(255, greenPixel.getMaxValue());
+    assertEquals(255, bluePixel.getMaxValue());
+    assertEquals(255, yellowPixel.getMaxValue());
+    assertEquals(255, randomPixel.getMaxValue());
+    assertEquals(64, lowerMinPixel.getMaxValue());
+  }
+
+  @Test
+  public void testGetValue() {
+    assertEquals(255, redPixel.getValue());
+    assertEquals(255, greenPixel.getValue());
+    assertEquals(255, bluePixel.getValue());
+    assertEquals(255, yellowPixel.getValue());
+    assertEquals(230, randomPixel.getValue());
+    assertEquals(54, lowerMinPixel.getValue());
+    assertEquals(255, clampUpper.getValue());
+    assertEquals(20, clampLower.getValue());
+    assertEquals(252, allSame.getValue());
+    assertEquals(220, incrementAll.getValue());
+  }
+
+  @Test
+  public void testGetIntensity() {
+    assertEquals(85, redPixel.getIntensity());
+    assertEquals(85, greenPixel.getIntensity());
+    assertEquals(85, bluePixel.getIntensity());
+    assertEquals(170, yellowPixel.getIntensity());
+    assertEquals(164, randomPixel.getIntensity());
+    assertEquals(28, lowerMinPixel.getIntensity());
+    assertEquals(98, clampUpper.getIntensity());
+    assertEquals(13, clampLower.getIntensity());
+    assertEquals(252, allSame.getIntensity());
+    assertEquals(154, incrementAll.getIntensity());
+  }
+
+  @Test
+  public void testGetLuma() {
+    assertEquals(54, redPixel.getLuma());
+    assertEquals(182, greenPixel.getLuma());
+    assertEquals(18, bluePixel.getLuma());
+    assertEquals(236, yellowPixel.getLuma());
+    assertEquals(110, randomPixel.getLuma());
+    assertEquals(26, lowerMinPixel.getLuma());
+    assertEquals(69, clampUpper.getLuma());
+    assertEquals(15, clampLower.getLuma());
+    assertEquals(251, allSame.getLuma());
+    assertEquals(100, incrementAll.getLuma());
+  }
+}
