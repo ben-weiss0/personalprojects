@@ -1,0 +1,31 @@
+package imageprocessor.model.operations.pixel;
+
+import imageprocessor.model.IPixel;
+import imageprocessor.model.PixelImpl;
+
+/**
+ * Pixel function object to change the exposure of a pixel.
+ */
+public class PixelExposure implements PixelOperations {
+  private int scale;
+
+  /**
+   * Constructor.
+   * @param scale amount we will change exposure.
+   */
+  public PixelExposure(int scale) {
+    this.scale = scale;
+  }
+
+  @Override
+  public IPixel apply(IPixel pixel) {
+    IPixel pxl = new PixelImpl.PixelBuilder()
+            .red(pixel.getRed())
+            .green(pixel.getGreen())
+            .blue(pixel.getBlue())
+            .alpha(pixel.getAlpha())
+            .changeAll(scale)
+            .build();
+    return pxl;
+  }
+}
