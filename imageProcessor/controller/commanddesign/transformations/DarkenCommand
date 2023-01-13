@@ -1,0 +1,34 @@
+package imageprocessor.controller.commanddesign.transformations;
+
+import java.util.Scanner;
+
+import imageprocessor.model.ImageProcessingModel;
+import imageprocessor.model.operations.Exposure;
+
+/**
+ * Function object that is called when the user wants to generate a new darkened image in our
+ * model from an existing image in our model.
+ */
+public class DarkenCommand extends AbstractExposureCommand {
+  Scanner sc;
+
+  /**
+   * Constructor.
+   * @param sc scans the readable to find the amount we want to darken, which image reference we'd
+   *           like to darken, and the reference to the new darkened image.
+   */
+  public DarkenCommand(Scanner sc) throws IllegalStateException {
+    super(sc);
+  }
+
+  /**
+   * Darkens an existing image in our model and saves it with a new reference.
+   * @param model our storage system of all images. Each object will be able to access different
+   *              images inside the model and use them to manipulate the model.
+   */
+  @Override
+  public void apply(ImageProcessingModel model) {
+    parseScanner();
+    model.transform(new Exposure(-1 * scale), src, dest);
+  }
+}
