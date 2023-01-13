@@ -1,0 +1,34 @@
+package imageprocessor.model;
+
+import imageprocessor.model.operations.Operations;
+
+/**
+ * A processing unit that stores a set of images.
+ */
+public interface ImageProcessingModel {
+
+  /**
+   * Gets the image from a reference in our storage system.
+   * @param src the string reference to the Image.
+   * @return the image referred by the provided string.
+   */
+  IImage getImageFrom(String src);
+
+  /**
+   * Adds an image to our storage system.
+   * @param src the string reference to the image we are adding.
+   * @param img the image we are adding itself.
+   */
+  void add(String src, IImage img);
+
+  /**
+   * Taking an image from our storage system, applying an operation on it and getting a
+   * new image that has been operated on. We then store this new image with a new reference in
+   * our storage system.
+   * @param functionObj the function object that represents the operation we will apply on the image
+   * @param src the string reference to our image.
+   * @param dest the string reference to the new transformed image.
+   */
+  void transform(Operations functionObj, String src, String dest);
+}
+
