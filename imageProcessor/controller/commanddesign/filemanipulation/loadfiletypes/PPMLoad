@@ -1,0 +1,35 @@
+package imageprocessor.controller.commanddesign.filemanipulation.loadfiletypes;
+
+import java.awt.image.BufferedImage;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.util.Scanner;
+
+import imageprocessor.controller.commanddesign.filemanipulation.fileconversion.FileImageConversion;
+import imageprocessor.controller.commanddesign.filemanipulation.fileconversion.PNGFileConversion;
+import imageprocessor.controller.commanddesign.filemanipulation.fileconversion.PPMFileConversion;
+import imageprocessor.model.IImage;
+import imageprocessor.model.IPixel;
+import imageprocessor.model.ImageImpl;
+import imageprocessor.model.ImageProcessingModel;
+import imageprocessor.model.PixelImpl;
+
+/**
+ * Represents a {@code PPMLoad} with a file and a reference, which allows for the client to load
+ * PPM files directly into the model from their own computer.
+ */
+public class PPMLoad extends AbstractLoad {
+  /**
+   * Loads a PPM photo to a location in the storage system.
+   * @param file PPM file we are loading
+   * @param reference key in our storage
+   */
+  public PPMLoad(String file, String reference) {
+    super(file, reference);
+  }
+
+  @Override
+  protected FileImageConversion getConverter() {
+    return new PPMFileConversion();
+  }
+}
