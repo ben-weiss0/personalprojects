@@ -1,0 +1,23 @@
+package imageprocessor.controller.commanddesign.filemanipulation.savefiletypes;
+
+import imageprocessor.controller.commanddesign.filemanipulation.fileconversion.BMPFileConversion;
+import imageprocessor.controller.commanddesign.filemanipulation.fileconversion.FileImageConversion;
+import imageprocessor.controller.commanddesign.filemanipulation.fileconversion.JPGFileConversion;
+
+/**
+ * Save to JPG file from IImage.
+ */
+public class NewJPGSave extends NewAbstractSave {
+    /**
+     * Constructor.
+     * @param file location to save
+     */
+    public NewJPGSave(String file) {
+        super(file);
+    }
+
+    @Override
+    protected FileImageConversion getConverter() {
+        return new JPGFileConversion();
+    }
+}
