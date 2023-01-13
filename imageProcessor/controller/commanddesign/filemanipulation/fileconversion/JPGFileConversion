@@ -1,0 +1,13 @@
+package imageprocessor.controller.commanddesign.filemanipulation.fileconversion;
+
+import java.awt.image.BufferedImage;
+
+/**
+ * Conversion between JPG files, buffered images, and IImages.
+ */
+public class JPGFileConversion extends AbstractFileConversion {
+    @Override
+    protected int getType() {
+        return BufferedImage.TYPE_INT_RGB;
+    }
+}
