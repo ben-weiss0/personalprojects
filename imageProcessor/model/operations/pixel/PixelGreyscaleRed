@@ -1,0 +1,13 @@
+package imageprocessor.model.operations.pixel;
+
+import imageprocessor.model.IPixel;
+
+/**
+ * Pixel function object to greyscale by red component.
+ */
+public class PixelGreyscaleRed extends PixelTransform {
+
+  protected double[][] getTransformationMatrix(IPixel pixel) {
+    return new double[][] { {1, 0, 0}, {1, 0, 0}, {1, 0, 0} };
+  }
+}
