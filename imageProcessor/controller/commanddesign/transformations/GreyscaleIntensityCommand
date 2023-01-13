@@ -1,0 +1,34 @@
+package imageprocessor.controller.commanddesign.transformations;
+
+import java.util.Scanner;
+
+import imageprocessor.model.ImageProcessingModel;
+import imageprocessor.model.operations.GreyscaleIntensity;
+
+/**
+ * Function object that is called when the user wants to generate a new greyscaled
+ * image in our model from an existing image in our model by the pixel's intensity.
+ */
+public class GreyscaleIntensityCommand extends AbstractTransformCommand {
+
+  /**
+   * Explained in abstract.
+   * @param sc explained in abstract.
+   * @throws IllegalStateException when the readable has no more elements to read from.
+   */
+  public GreyscaleIntensityCommand(Scanner sc) throws IllegalStateException {
+    super(sc);
+  }
+
+  /**
+   * Greyscale by the pixel's intensity an existing image in our model and saves it with
+   * a new reference.
+   * @param model our storage system of all images. Each object will be able to access different
+   *              images inside the model and use them to manipulate the model.
+   */
+  @Override
+  public void apply(ImageProcessingModel model) {
+    super.apply(model);
+    model.transform(new GreyscaleIntensity(), src, dest);
+  }
+}
