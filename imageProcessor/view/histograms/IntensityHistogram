@@ -1,0 +1,15 @@
+package imageprocessor.view.histograms;
+
+import imageprocessor.model.operations.GreyscaleIntensity;
+import imageprocessor.model.operations.Operations;
+
+/**
+ * Represents the intensity histogram for an image.
+ */
+public class IntensityHistogram extends AbstractHistogram {
+
+  @Override
+  protected Operations selectGreyScale() {
+    return new GreyscaleIntensity();
+  }
+}
