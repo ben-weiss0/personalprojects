@@ -1,0 +1,12 @@
+package imageprocessor.model.operations;
+
+import java.util.function.Function;
+
+import imageprocessor.model.IImage;
+
+/**
+ * Function objects that we can apply to an image to transform it.
+ */
+public interface Operations extends Function<IImage, IImage> {
+
+}
