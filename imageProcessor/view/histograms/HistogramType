@@ -1,0 +1,13 @@
+package imageprocessor.view.histograms;
+
+import java.util.Map;
+import java.util.function.Function;
+
+import imageprocessor.model.IImage;
+
+/**
+ * Represents a set of histograms of an image.
+ */
+public interface HistogramType extends Function<IImage, Map<Integer, Integer>> {
+
+}
