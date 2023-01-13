@@ -1,0 +1,33 @@
+package imageprocessor.controller.commanddesign.filemanipulation;
+
+import java.util.Scanner;
+import imageprocessor.controller.commanddesign.Commands;
+
+/**
+ * Represents an {@code AbstractFileManipulation} with a file, reference, scanner, and extension.
+ */
+public abstract class AbstractFileManipulation implements Commands {
+  protected String file;
+  protected String reference;
+  protected Scanner sc;
+  protected String extension;
+
+  /**
+   * Constructor for a {@code AbstractFileManipulation} that takes in a scanner as an argument.
+   * @param sc a Scanner
+   */
+  public AbstractFileManipulation(Scanner sc) {
+    this.sc = sc;
+  }
+
+  // Breaks up entries into the scanner
+  protected void parseScanner() {
+    if (sc.hasNext()) {
+      this.file = sc.next();
+    }
+    if (sc.hasNext()) {
+      this.reference = sc.next();
+    }
+    extension = file.substring(file.length() - 3);
+  }
+}
