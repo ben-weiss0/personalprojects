@@ -1,0 +1,10 @@
+package imageprocessor.model.operations.pixel;
+
+import imageprocessor.model.IPixel;
+
+public class PixelSepia extends PixelTransform {
+  @Override
+  protected double[][] getTransformationMatrix(IPixel pixel) {
+    return new double[][] {{.393, .769, .189}, {.349, .686, .168}, {.272, .534, .131}};
+  }
+}
