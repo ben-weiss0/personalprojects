@@ -1,0 +1,17 @@
+package imageprocessor.model.operations;
+
+import imageprocessor.model.IImage;
+import imageprocessor.model.operations.pixel.PixelGreyscaleValue;
+import imageprocessor.model.operations.pixel.PixelOperations;
+
+/**
+ * Function object to greyscale an image by its value.
+ */
+public class GreyscaleValue implements Operations {
+
+  @Override
+  public IImage apply(IImage image) {
+    PixelOperations o = new PixelGreyscaleValue();
+    return new FullImageOperation(o).apply(image);
+  }
+}
