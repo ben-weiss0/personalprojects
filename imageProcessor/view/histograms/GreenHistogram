@@ -1,0 +1,16 @@
+package imageprocessor.view.histograms;
+
+import imageprocessor.model.operations.GreyscaleGreen;
+import imageprocessor.model.operations.Operations;
+
+/**
+ * Represents the green histogram for an image.
+ */
+public class GreenHistogram extends AbstractHistogram {
+
+  @Override
+  protected Operations selectGreyScale() {
+    return new GreyscaleGreen();
+  }
+
+}
