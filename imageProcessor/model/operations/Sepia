@@ -1,0 +1,14 @@
+package imageprocessor.model.operations;
+
+import imageprocessor.model.IImage;
+import imageprocessor.model.operations.pixel.PixelOperations;
+import imageprocessor.model.operations.pixel.PixelSepia;
+
+public class Sepia implements Operations {
+
+  @Override
+  public IImage apply(IImage image) {
+    PixelOperations o = new PixelSepia();
+    return new FullImageOperation(o).apply(image);
+  }
+}
