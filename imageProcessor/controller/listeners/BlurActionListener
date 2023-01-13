@@ -1,0 +1,19 @@
+package imageprocessor.controller.listeners;
+
+import imageprocessor.model.operations.Operations;
+import imageprocessor.model.operations.SimpleBlur;
+import imageprocessor.view.ViewForGUI;
+
+/**
+ * Action listener for blur button.
+ */
+public class BlurActionListener extends AbstractTransformationListener {
+    public BlurActionListener(ViewForGUI board) {
+        super(board);
+    }
+
+    @Override
+    protected Operations getCommand() {
+        return new SimpleBlur();
+    }
+}
