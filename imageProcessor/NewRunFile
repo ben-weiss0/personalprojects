@@ -1,0 +1,57 @@
+import imageprocessor.controller.ControllerImpl;
+import imageprocessor.controller.ImageProcessingController;
+import imageprocessor.model.ImageProcessingModel;
+import imageprocessor.model.ModelImpl;
+import imageprocessor.view.ImageProcessingView;
+import imageprocessor.view.ImageProcessingViewImpl;
+import imageprocessor.view.MyBoard;
+
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.StringReader;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
+/**
+ * This example shows the different user interface elements in Java Swing.
+ * Please use these examples as guidelines only to see how to use them. This
+ * example has not been designed very well, it is only meant to illustrate code
+ * snippets.
+ *
+ * Feel free to try out different modifications to see how the program changes.
+ */
+
+public class NewRunFile {
+
+  /**
+   * Main method that allows user to run program.
+   *
+   * @param args command line arguments
+   */
+  public static void main(String[] args) {
+    ImageProcessingModel m = new ModelImpl();
+    ImageProcessingView v = new ImageProcessingViewImpl(m);
+    if (args.length == 3) {
+      MyBoard board = new MyBoard();
+      board.setVisible(true);
+    } else if (args.length == 4 && args[3].equals("-text")) {
+      new StringBuilder();
+      Readable r = new InputStreamReader(System.in);
+      ImageProcessingController controller = new ControllerImpl(m, v, r);
+      controller.start();
+    } else if (args.length == 5 && args[3].equals("-file")) {
+      try {
+        String data = new String(Files.readAllBytes(Paths.get(args[4])));
+        Readable r2 = new StringReader(data);
+        ImageProcessingController controller = new ControllerImpl(m, v, r2);
+        controller.start();
+      } catch (IOException e) {
+        throw new IllegalArgumentException("No such file found");
+      }
+    }
+    else {
+      throw new IllegalArgumentException("Nope!");
+    }
+  }
+}
