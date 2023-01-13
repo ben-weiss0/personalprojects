@@ -1,0 +1,55 @@
+package imageprocessor.controller.listeners;
+
+import imageprocessor.controller.commanddesign.filemanipulation.fileconversion.PNGFileConversion;
+import imageprocessor.controller.commanddesign.filemanipulation.savefiletypes.NewJPGSave;
+import imageprocessor.controller.commanddesign.filemanipulation.savefiletypes.NewPNGSave;
+import imageprocessor.controller.commanddesign.filemanipulation.savefiletypes.NewPPMSave;
+import imageprocessor.model.IImage;
+import imageprocessor.view.ViewForGUI;
+
+import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.image.BufferedImage;
+
+/**
+ * Action listener for save to computer button.
+ */
+public class SaveListener implements ActionListeners {
+    private ViewForGUI board;
+    private JLabel label;
+
+    /**
+     * Constructor.
+     * @param board the working view.
+     * @param label the label whose text we are exporting to.
+     */
+    public SaveListener(ViewForGUI board, JLabel label) {
+        this.board = board;
+        this.label = label;
+    }
+
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        this.apply();
+    }
+
+    private void apply() {
+        String file = board.getLabelText(label);
+        BufferedImage image = board.getImage();
+        IImage img = new PNGFileConversion().bufferedToIImage(image);
+        if (file.length() < 3) {
+            board.addMessage("Currently, this program only supports png, jpg, and ppm",
+                    JOptionPane.INFORMATION_MESSAGE);
+        } else if (file.endsWith("jpg")) {
+            new NewJPGSave(file).go(img);
+        } else if (file.endsWith("png")) {
+            new NewPNGSave(file).go(img);
+        } else if (file.endsWith("ppm")) {
+            new NewPPMSave(file).go(img);
+        } else {
+            board.addMessage("Currently, this program only supports png, jpg, and ppm",
+                    JOptionPane.INFORMATION_MESSAGE);
+        }
+    }
+}
