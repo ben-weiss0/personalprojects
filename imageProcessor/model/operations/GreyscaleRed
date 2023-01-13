@@ -1,0 +1,17 @@
+package imageprocessor.model.operations;
+
+import imageprocessor.model.IImage;
+import imageprocessor.model.operations.pixel.PixelGreyscaleRed;
+import imageprocessor.model.operations.pixel.PixelOperations;
+
+/**
+ * Function object to greyscale an image by its red component.
+ */
+public class GreyscaleRed implements Operations {
+
+  @Override
+  public IImage apply(IImage image) {
+    PixelOperations o = new PixelGreyscaleRed();
+    return new FullImageOperation(o).apply(image);
+  }
+}
