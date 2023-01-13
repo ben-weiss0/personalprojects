@@ -1,0 +1,26 @@
+package imageprocessor.model.operations;
+
+import imageprocessor.model.IImage;
+import imageprocessor.model.operations.pixel.PixelOperations;
+import imageprocessor.model.operations.pixel.PixelExposure;
+
+/**
+ * Exposure change function object.
+ */
+public class Exposure implements Operations {
+  private int scale;
+
+  /**
+   * Constructor.
+   * @param scale by how much we will brighten.
+   */
+  public Exposure(int scale) {
+    this.scale = scale;
+  }
+
+  @Override
+  public IImage apply(IImage image) {
+    PixelOperations o = new PixelExposure(scale);
+    return new FullImageOperation(o).apply(image);
+  }
+}
