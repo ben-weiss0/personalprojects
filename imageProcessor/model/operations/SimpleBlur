@@ -1,0 +1,13 @@
+package imageprocessor.model.operations;
+
+public class SimpleBlur extends AbstractFilter {
+
+  @Override
+  protected double[] generateKernel() {
+    double[] simpleKernel = new double[]{
+            .0625, .125, .0625,
+            .125, .25, .125,
+            .0625, .125, 0.0625};
+    return simpleKernel;
+  }
+}
