@@ -1,0 +1,54 @@
+package imageprocessor.controller.commanddesign.filemanipulation;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Scanner;
+
+import imageprocessor.controller.commanddesign.filemanipulation.savefiletypes.BPMSave;
+import imageprocessor.controller.commanddesign.filemanipulation.savefiletypes.FileSave;
+import imageprocessor.controller.commanddesign.filemanipulation.savefiletypes.JPGSave;
+import imageprocessor.controller.commanddesign.filemanipulation.savefiletypes.PNGSave;
+import imageprocessor.controller.commanddesign.filemanipulation.savefiletypes.PPMSave;
+import imageprocessor.model.ImageProcessingModel;
+
+/**
+ * Function object that is called when the user wants to save a PPM image in our model to
+ * their computer.
+ */
+public class SaveCommand extends AbstractFileManipulation {
+
+  /**
+   * Constructor for a {@code SaveCommand} that takes in a Scanner.
+   *
+   * @param sc Scans the readable and finds the desired location to save the PPM image as well
+   *           as the string reference to the image.
+   */
+  public SaveCommand(Scanner sc) {
+    super(sc);
+  }
+
+  /**
+   * Saves a PPM image to our computer.
+   *
+   * @param model our storage system of all images. Each object will be able to access different
+   *              images inside the model and use them to manipulate the model.
+   */
+  @Override
+  public void apply(ImageProcessingModel model) {
+    parseScanner();
+    FileSave save;
+    Map<String, FileSave> saveType = new HashMap<>();
+    saveType.put("ppm", new PPMSave(file, reference));
+    saveType.put("png", new PNGSave(file, reference));
+    saveType.put("bmp", new BPMSave(file, reference));
+    saveType.put("jpg", new JPGSave(file, reference));
+
+    save = saveType.getOrDefault(extension, null);
+    if (save == null) {
+      throw new IllegalStateException("Not a valid extension");
+    }
+    else {
+      save.apply(model);
+    }
+  }
+}
