@@ -1,0 +1,63 @@
+package imageprocessor.controller.listeners;
+
+import imageprocessor.controller.commanddesign.filemanipulation.fileconversion.FileImageConversion;
+import imageprocessor.controller.commanddesign.filemanipulation.fileconversion.JPGFileConversion;
+import imageprocessor.controller.commanddesign.filemanipulation.fileconversion.PNGFileConversion;
+import imageprocessor.controller.commanddesign.filemanipulation.fileconversion.PPMFileConversion;
+import imageprocessor.model.*;
+import imageprocessor.view.ViewForGUI;
+
+import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.image.BufferedImage;
+
+/**
+ * Action listener for load into GUI button.
+ */
+public class LoadListener implements ActionListeners {
+    private ViewForGUI board;
+    private JLabel label;
+
+    /**
+     * Constructor.
+     * @param board the working view.
+     * @param label the label that we are finding our file from.
+     */
+    public LoadListener(ViewForGUI board, JLabel label) {
+        this.board = board;
+        this.label = label;
+    }
+
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        this.apply();
+    }
+
+    private void apply() {
+        String file = board.getLabelText(label);
+
+        if (file.length() < 3) {
+            board.addMessage("Currently, this program only supports png, jpg, and ppm",
+                    JOptionPane.INFORMATION_MESSAGE);
+        } else if (file.endsWith("jpg")) {
+            FileImageConversion c = new JPGFileConversion();
+            subOperation(file, c);
+        } else if (file.endsWith("png")) {
+            FileImageConversion c = new PNGFileConversion();
+            subOperation(file, c);
+        } else if (file.endsWith("ppm")) {
+            FileImageConversion c = new PPMFileConversion();
+            subOperation(file, c);
+        } else {
+            board.addMessage("Currently, this program only supports png, jpg, and ppm",
+                    JOptionPane.INFORMATION_MESSAGE);
+        }
+    }
+
+    private void subOperation(String file, FileImageConversion c) {
+        IImage iimage = c.fileToIImage(file);
+        BufferedImage image = new PNGFileConversion().iImageToBufferedImage(iimage);
+        board.refresh(image);
+    }
+}
