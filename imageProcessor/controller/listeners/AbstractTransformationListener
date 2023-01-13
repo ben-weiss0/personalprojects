@@ -1,0 +1,35 @@
+package imageprocessor.controller.listeners;
+
+import imageprocessor.controller.commanddesign.filemanipulation.fileconversion.PNGFileConversion;
+import imageprocessor.model.IImage;
+import imageprocessor.model.operations.Operations;
+import imageprocessor.view.ViewForGUI;
+
+import java.awt.event.ActionEvent;
+import java.awt.image.BufferedImage;
+
+/**
+ * Abstract class for abstraction of transformation listeners.
+ */
+public abstract class AbstractTransformationListener implements ActionListeners {
+    protected ViewForGUI board;
+
+    /**
+     * Inheriting class constructor.
+     * @param board the view interface we are working with.
+     */
+    protected AbstractTransformationListener(ViewForGUI board) {
+        this.board = board;
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        Operations operationObject = this.getCommand();
+        IImage img = new PNGFileConversion().bufferedToIImage(this.board.getImage());
+        img = operationObject.apply(img);
+        BufferedImage image = new PNGFileConversion().iImageToBufferedImage(img);
+        this.board.refresh(image);
+    }
+
+    protected abstract Operations getCommand();
+}
