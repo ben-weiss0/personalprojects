@@ -1,0 +1,35 @@
+import imageprocessor.model.IImage;
+import imageprocessor.model.ImageProcessingModel;
+import imageprocessor.model.operations.Operations;
+
+/**
+ * Mock model to check if controller sends correct inputs.
+ */
+public class MockModel implements ImageProcessingModel {
+  private StringBuilder log;
+
+  /**
+   * Constructor.
+   * @param log to change.
+   */
+  MockModel(StringBuilder log) {
+    this.log = log;
+  }
+
+  @Override
+  public IImage getImageFrom(String src) {
+    log.append("Get String from " + src + "\n");
+    return null;
+  }
+
+  @Override
+  public void add(String src, IImage img) {
+    log.append("Add image into our model with tag " + src + " Image with " + img.getRows() +
+            " rows and " + img.getColumns() + " columns\n");
+  }
+
+  @Override
+  public void transform(Operations functionObj, String src, String dest) {
+    log.append("Exposure " + "image src: " + src + " image dest: " + dest + "\n");
+  }
+}
