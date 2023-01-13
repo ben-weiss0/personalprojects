@@ -1,0 +1,61 @@
+package imageprocessor.controller.commanddesign.filemanipulation.savefiletypes;
+
+import imageprocessor.model.IImage;
+import imageprocessor.model.IPixel;
+import imageprocessor.model.ImageProcessingModel;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+
+/**
+ * Save to PPM file from IImage.
+ */
+public class NewPPMSave implements SaveFile {
+    private String file;
+
+    /**
+     * Constructor.
+     * @param file location to save
+     */
+    public NewPPMSave(String file) {
+        this.file = file;
+    }
+
+    @Override
+    public void go(IImage img) {
+        File f = new File(file);
+        FileOutputStream out;
+
+        try {
+            out = new FileOutputStream(f);
+        } catch (FileNotFoundException e) {
+            throw new IllegalStateException("File should, but doesn't exist");
+        }
+
+        try {
+            out.write(this.PPMTextFile(img).getBytes());
+            out.flush();
+            out.close();
+        } catch (IOException e) {
+            throw new IllegalStateException("I/O error occured");
+        }
+    }
+
+    private String PPMTextFile(IImage img) {
+        StringBuilder accumulateString = new StringBuilder();
+        accumulateString.append("P3 " + img.getColumns() + " " + img.getRows() + " " +
+                img.getMaxValue());
+        for (int i = 0; i < img.getRows(); i++) {
+            for (int j = 0; j < img.getColumns(); j++) {
+                IPixel currentPixel = img.getPixelAt(i, j);
+                accumulateString.append(" " + currentPixel.getRed());
+                accumulateString.append(" " + currentPixel.getGreen());
+                accumulateString.append(" " + currentPixel.getBlue());
+            }
+        }
+        accumulateString.append(" ");
+        return accumulateString.toString();
+    }
+}
