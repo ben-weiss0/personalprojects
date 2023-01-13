@@ -1,0 +1,49 @@
+package imageprocessor.controller.listeners;
+
+import imageprocessor.model.operations.Exposure;
+import imageprocessor.model.operations.Operations;
+import imageprocessor.view.ViewForGUI;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+
+/**
+ * Abstract listener for increasing or decreasing exposure.
+ */
+public abstract class ExposureListener extends AbstractTransformationListener {
+    protected int amount;
+    /**
+     * Constructor.
+     * @param board the working view.
+     */
+    protected ExposureListener(ViewForGUI board) {
+        super(board);
+        amount = 0;
+    }
+
+    public void actionPerformed(ActionEvent e) {
+        this.getAmount();
+        super.actionPerformed(e);
+    }
+
+    @Override
+    protected abstract Operations getCommand();
+
+    private void getAmount() {
+        try {
+            String s = (JOptionPane.showInputDialog((Component) board, "By how much?", "Request",
+                    JOptionPane.QUESTION_MESSAGE));
+            if (s == null) {
+                return;
+            }
+            else {
+                amount = Integer.parseInt(s);
+            }
+        }
+        catch (NumberFormatException ex) {
+            board.addMessage("You must enter an integer amount", JOptionPane.WARNING_MESSAGE);
+            this.getAmount();
+        }
+    }
+}
