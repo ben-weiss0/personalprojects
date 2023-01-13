@@ -1,0 +1,37 @@
+package imageprocessor.controller.commanddesign.transformations;
+
+import java.util.Scanner;
+
+import imageprocessor.controller.commanddesign.Commands;
+
+/**
+ * Represents an {@code AbstractExposureCommand} with a Scanner, scale, source, and destination.
+ */
+public abstract class AbstractExposureCommand implements Commands {
+
+  private Scanner sc;
+  protected int scale;
+  protected String src;
+  protected String dest;
+
+  /**
+   * Constructor for an {@code AbstractExposureCommand} that takes in a Scanner.
+   * @param sc a Scanner
+   */
+  public AbstractExposureCommand(Scanner sc) {
+    this.sc = sc;
+  }
+
+  protected void parseScanner() {
+    if (sc.hasNextInt()) {
+      this.scale = sc.nextInt();
+    }
+    if (sc.hasNext()) {
+      this.src = sc.next();
+    }
+    if (sc.hasNext()) {
+      this.dest = sc.next();
+    }
+  }
+
+}
