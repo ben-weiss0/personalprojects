@@ -1,0 +1,94 @@
+package imageprocessor.controller.commanddesign.filemanipulation.fileconversion;
+
+import imageprocessor.model.IImage;
+import imageprocessor.model.IPixel;
+import imageprocessor.model.ImageImpl;
+import imageprocessor.model.PixelImpl;
+
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+
+/**
+ * Conversion between classic file types, buffered images, and IImages.
+ */
+public abstract class AbstractFileConversion implements FileImageConversion {
+    @Override
+    public BufferedImage fileToBufferedImage(String fileName) {
+        FileInputStream input;
+        try {
+            input = new FileInputStream(fileName);
+        }
+        catch (FileNotFoundException e) {
+            throw new IllegalStateException("File DNE");
+        }
+        BufferedImage img;
+        try {
+            img = ImageIO.read(input);
+        }
+        catch (IOException e) {
+            throw new IllegalStateException("I/O Exception occurred when interacting with input file");
+        }
+        return img;
+    }
+
+    @Override
+    public BufferedImage iImageToBufferedImage(IImage image) {
+        BufferedImage bufferedImage = new BufferedImage(image.getColumns(), image.getRows(),
+                getType());
+        for (int i = 0; i < image.getRows(); i++) {
+            for (int j = 0; j < image.getColumns(); j++) {
+                IPixel pixel = image.getPixelAt(i, j);
+                int ARGB = new Color(pixel.getRed(), pixel.getGreen(), pixel.getBlue(),
+                        pixel.getAlpha()).getRGB();
+                bufferedImage.setRGB(j, i, ARGB);
+            }
+        }
+        return bufferedImage;
+    }
+
+    protected abstract int getType();
+
+    @Override
+    public IImage fileToIImage(String fileName) {
+        BufferedImage img = this.fileToBufferedImage(fileName);
+        IPixel[][] pixels = this.toPixelsStandard(img);
+        return new ImageImpl(pixels);
+    }
+
+    @Override
+    public IImage bufferedToIImage(BufferedImage image) {
+        IPixel[][] pixels = this.toPixelsStandard(image);
+        return new ImageImpl(pixels);    }
+
+    private IPixel[][] toPixelsStandard(BufferedImage image) {
+        int width = image.getWidth();
+        int height = image.getHeight();
+        IPixel[][] pixels = new IPixel[height][width];
+        for (int i = 0; i < height; i++) {
+            for (int j = 0; j < width; j++) {
+                int rgb = image.getRGB(j, i);
+                IPixel pixel = rgbToPixel(rgb);
+                pixels[i][j] = pixel;
+            }
+        }
+        return pixels;
+    }
+
+    // Appropriately translates color values for pixels
+    private IPixel rgbToPixel(int rgb) {
+        int alpha = (rgb >> 24) & 0xFF;
+        int red =   (rgb >> 16) & 0xFF;
+        int green = (rgb >>  8) & 0xFF;
+        int blue =  (rgb      ) & 0xFF;
+        return new PixelImpl.PixelBuilder()
+                .red(red)
+                .green(green)
+                .blue(blue)
+                .alpha(alpha)
+                .build();
+    }
+}
