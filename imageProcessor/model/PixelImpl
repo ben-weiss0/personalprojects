@@ -1,0 +1,197 @@
+package imageprocessor.model;
+
+/**
+ * Represents a {@code PixelImpl}, an implementation of the {@code IPixel} interface. A {@code
+ * PixelImpl} contains red, green, blue, and alpha values that are stored in private fields as
+ * integers. Changing any of these 3 fields will change the type of color that the pixel
+ * represents.
+ */
+public class PixelImpl implements IPixel {
+  private final int red;
+  private final int green;
+  private final int blue;
+  private final int maxValue;
+  private final int alpha;
+
+  // Private constructor forces user to create using builder pattern
+  private PixelImpl(int red, int green, int blue, int maxValue, int alpha) {
+    this.red = red;
+    this.green = green;
+    this.blue = blue;
+    this.maxValue = maxValue;
+    this.alpha = alpha;
+  }
+
+  @Override
+  public int getValue() {
+    // Essentially performing "Math.max" on the 3 fields of the class
+    // Had to be implemented in this manner because built-in "Math.max" only accepts 2 arguments
+    return Math.max(Math.max(this.red, this.green), this.blue);
+  }
+
+  @Override
+  public int getIntensity() {
+    // Design decision was made for this to simply be displayed as an integer
+    // Adding 0.5 to the end is to ensure more appropriate rounding
+    // For example, both 2.4 and 2.9 would be rounded (more cut-off) to 2 without this addition
+    return (this.red + this.green + this.blue) / 3;
+  }
+
+  @Override
+  public int getLuma() {
+    // Made design decision to cast Luma value to an integer as seen below
+    // Also adds 0.5 to ensure appropriate rounding during casting
+    return (int) ((0.2126 * this.red) + (0.7152 * this.green) + (0.0722 * this.blue));
+  }
+
+  @Override
+  public int getRed() {
+    return this.red;
+  }
+
+  @Override
+  public int getGreen() {
+    return this.green;
+  }
+
+  @Override
+  public int getBlue() {
+    return this.blue;
+  }
+
+  @Override
+  public int getMaxValue() {
+    return this.maxValue;
+  }
+
+  public int getAlpha() {
+    return this.alpha;
+  }
+
+  /**
+   * Builder class for our {@code IPixel}.
+   */
+  public static class PixelBuilder {
+    private int red;
+    private int green;
+    private int blue;
+    private int maxValue = 255;
+    private int alpha = 255;
+
+    /**
+     * Sets the pixel's red component.
+     * @param red the value we set the red component to.
+     * @return a builder with the new red component.
+     */
+    public PixelBuilder red(int red) {
+      this.red = red;
+      this.clamp();
+      return this;
+    }
+
+    /**
+     * Sets the pixel's green component.
+     * @param green the value we set the green component to.
+     * @return a builder with the new green component.
+     */
+    public PixelBuilder green(int green) {
+      this.green = green;
+      this.clamp();
+      return this;
+    }
+
+    /**
+     * Sets the pixel's blue component.
+     * @param blue the value we set the blue component to.
+     * @return a builder with the new blue component.
+     */
+    public PixelBuilder blue(int blue) {
+      this.blue = blue;
+      this.clamp();
+      return this;
+    }
+
+    /**
+     * Changes the red, green, and blue components by a constant.
+     * @param change the value we add to each of the builder's current components.
+     * @return a builder with the new components.
+     */
+    public PixelBuilder changeAll(int change) {
+      this.red += change;
+      this.green += change;
+      this.blue += change;
+      this.clamp();
+      return this;
+    }
+
+    /**
+     * Sets the maximum value for a component of a pixel.
+     * @param maxValue the maximum value for the pixel.
+     * @return a builder with the updated maximum value.
+     */
+    public PixelBuilder maxValue(int maxValue) {
+      this.maxValue = maxValue;
+      return this;
+    }
+
+    /**
+     * Sets the pixel's alpha component.
+     * @param alpha the value we set alpha to.
+     * @return a builder with the updated alpha value.
+     */
+    public PixelBuilder alpha(int alpha) {
+      if (alpha < 0) {
+        this.alpha = 0;
+      } else if (alpha > 255) {
+        this.alpha = 255;
+      }
+      return this;
+    }
+
+    /**
+     * Sets the red, green, and blue components to the same value.
+     * @param value the value we set the components to.
+     * @return a builder with the new components.
+     */
+    public PixelBuilder setAll(int value) {
+      this.red = value;
+      this.green = value;
+      this.blue = value;
+      this.clamp();
+      return this;
+    }
+
+    public PixelBuilder array(double[] arr) {
+      this.red = (int) (arr[0] + 0.5);
+      this.green = (int) (arr[1] + 0.5);
+      this.blue = (int) (arr[2] + 0.5);
+      this.clamp();
+      return this;
+    }
+
+    private void clamp() {
+      this.red = this.clampColor(red);
+      this.green = this.clampColor(green);
+      this.blue = this.clampColor(blue);
+    }
+
+    // Invariant note: We set the max value to 255 if no value is provided, so this
+    // will never be a problem of being 0.
+    private int clampColor(int val) {
+      if (val < 0) {
+        return 0;
+      } else if (val > maxValue) {
+        return maxValue;
+      }
+      return val;
+    }
+
+    /**
+     * Builds an {@code IPixel} from the builder's fields.
+     * @return a new {@code IPixel} with the same fields of the builder.
+     */
+    public IPixel build() {
+      return new PixelImpl(this.red, this.green, this.blue, this.maxValue, this.alpha);
+    }
+  }
+}
