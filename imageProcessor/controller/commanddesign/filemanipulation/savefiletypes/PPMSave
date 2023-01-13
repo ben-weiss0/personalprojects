@@ -1,0 +1,73 @@
+package imageprocessor.controller.commanddesign.filemanipulation.savefiletypes;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+
+import imageprocessor.model.IImage;
+import imageprocessor.model.IPixel;
+import imageprocessor.model.ImageProcessingModel;
+
+/**
+ * Represents a {@code PPMSave} with a file and reference, which allows for saving a file as
+ * PPM locally on the client's computer.
+ */
+public class PPMSave implements FileSave{
+  private String file;
+  private String reference;
+
+  /**
+   * Constructor for a {@code PPMSave} that takes in both fields as arguments.
+   * @param file
+   * @param reference
+   */
+  public PPMSave(String file, String reference) {
+    this.file = file;
+    this.reference = reference;
+  }
+
+  /**
+   * Saves a PPM image from the local model to the client's computer.
+   * @param model an {@code ImageProcessingModel} that contains stored images
+   */
+  public void apply(ImageProcessingModel model) {
+    new NewPPMSave(file).go(model.getImageFrom(reference));
+  }
+//
+//    File f = new File(file);
+//    FileOutputStream out;
+//
+//    try {
+//      out = new FileOutputStream(f);
+//    } catch (FileNotFoundException e) {
+//      throw new IllegalStateException("File should, but doesn't exist");
+//    }
+//
+//    try {
+//      IImage srcImg = model.getImageFrom(reference);
+//      out.write(this.PPMTextFile(srcImg).getBytes());
+//      out.flush();
+//      out.close();
+//    } catch (IOException e) {
+//      throw new IllegalStateException("I/O error occured");
+//    }
+//  }
+//
+//  // Takes a PPM file and turns it into text that is usable to our program
+//  private String PPMTextFile(IImage img) {
+//    StringBuilder accumulateString = new StringBuilder();
+//    accumulateString.append("P3 " + img.getColumns() + " " + img.getRows() + " " +
+//            img.getMaxValue());
+//    for (int i = 0; i < img.getRows(); i++) {
+//      for (int j = 0; j < img.getColumns(); j++) {
+//        IPixel currentPixel = img.getPixelAt(i, j);
+//        accumulateString.append(" " + currentPixel.getRed());
+//        accumulateString.append(" " + currentPixel.getGreen());
+//        accumulateString.append(" " + currentPixel.getBlue());
+//      }
+//    }
+//    accumulateString.append(" ");
+//    return accumulateString.toString();
+//  }
+}
