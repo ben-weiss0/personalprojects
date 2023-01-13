@@ -1,0 +1,31 @@
+package imageprocessor.controller.commanddesign.filemanipulation.savefiletypes;
+
+import imageprocessor.controller.commanddesign.filemanipulation.fileconversion.BMPFileConversion;
+import imageprocessor.controller.commanddesign.filemanipulation.fileconversion.FileImageConversion;
+import imageprocessor.model.ImageProcessingModel;
+
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+
+/**
+ * Represents a {@code BPMSave} with a file and reference, which allows for saving a file as
+ * BPM locally on the client's computer.
+ */
+public class BPMSave extends AbstractFileSave {
+  /**
+   * Constructor.
+   * @param file location to save
+   */
+  public BPMSave(String file, String reference) {
+    super(file, reference);
+  }
+
+  @Override
+  protected FileImageConversion getConverter() {
+    return new BMPFileConversion();
+  }
+}
