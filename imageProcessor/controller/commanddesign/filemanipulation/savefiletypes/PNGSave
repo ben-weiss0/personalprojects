@@ -1,0 +1,30 @@
+package imageprocessor.controller.commanddesign.filemanipulation.savefiletypes;
+
+import imageprocessor.controller.commanddesign.filemanipulation.fileconversion.FileImageConversion;
+import imageprocessor.controller.commanddesign.filemanipulation.fileconversion.PNGFileConversion;
+import imageprocessor.controller.commanddesign.filemanipulation.loadfiletypes.PNGLoad;
+
+import java.awt.image.BufferedImage;
+
+/**
+ * Represents a {@code PNGSave} with a file and reference, which allows for saving a file as
+ * PNG locally on the client's computer.
+ */
+public class PNGSave extends AbstractFileSave {
+
+  /**
+   * Constructor for a {@code PNGSave} that takes in both fields as arguments.
+   * @param file the name of the file as a String
+   * @param reference the name of the file destination as a String
+   */
+  public PNGSave(String file, String reference) {
+    super(file, reference);
+  }
+
+  @Override
+  protected FileImageConversion getConverter() {
+    return new PNGFileConversion();
+  }
+
+
+}
