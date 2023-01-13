@@ -1,0 +1,49 @@
+import imageprocessor.controller.listeners.ActionListeners;
+import imageprocessor.controller.listeners.GreyScaleBlueActionListener;
+import imageprocessor.controller.listeners.LoadFileChooserListener;
+import imageprocessor.controller.listeners.LoadListener;
+import imageprocessor.view.ViewForGUI;
+import org.junit.Test;
+
+import javax.swing.*;
+import java.awt.event.ActionEvent;
+
+import static org.junit.Assert.assertEquals;
+
+/**
+ * Listener testing
+ */
+public class ListenerTest extends ControllerTest {
+
+    private ViewForGUI view;
+    private JLabel label;
+
+    @Override
+    public void setAll() {
+        super.setAll();
+        view = new MockGUIViewBlueGreyScaleAndLoad();
+        label = new MockLabel();
+    }
+
+    @Test
+    public void testListenerRefresh() {
+        assertEquals("", view.toString());
+        new GreyScaleBlueActionListener(view).actionPerformed(new ActionEvent(view, 2, "action"));
+        StringBuilder expected = new StringBuilder();
+        expected.append("Image log: Changed the buffered image to be greyscaled blue\n");
+        expected.append("IImage log: Refreshed IImage to be greyscaled blue\n");
+        expected.append("greyscale blue");
+        assertEquals(expected.toString(), view.toString());
+    }
+
+    @Test
+    public void testListenerLoad() {
+        assertEquals("", view.toString());
+        new LoadListener(view, label).actionPerformed(new ActionEvent(view, 2, "action"));
+        assertEquals("fail", view.toString());
+        label.setText("reshw5/a.jpg");
+        new LoadListener(view, label).actionPerformed(new ActionEvent(view, 2, "action"));
+        view.addMessage(label.getText(), 2);
+        assertEquals("jpg changed", view.toString().substring(view.toString().length() - 11));
+    }
+}
