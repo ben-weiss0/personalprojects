@@ -1,0 +1,16 @@
+package imageprocessor.controller.commanddesign.filemanipulation.savefiletypes;
+
+import imageprocessor.model.IImage;
+
+/**
+ * Offers a better saving mechanism where you can save an image rather than
+ * using a storage model and string reference.
+ */
+public interface SaveFile {
+
+    /**
+     * Saves the provided IImage to the computer.
+     * @param img the image we are saving.
+     */
+    void go(IImage img);
+}
