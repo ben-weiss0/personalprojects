@@ -1,0 +1,38 @@
+package imageprocessor.controller.listeners;
+
+import imageprocessor.view.ViewForGUI;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.io.File;
+
+/**
+ * Action listener for choosing a path to save to.
+ */
+public class SaveFileChooserListener implements ActionListeners {
+
+    private ViewForGUI board;
+    private JLabel label;
+
+    /**
+     * Constructor.
+     * @param board the working view.
+     * @param label the label that we are setting the location of the file.
+     */
+    public SaveFileChooserListener(ViewForGUI board, JLabel label) {
+        this.board = board;
+        this.label = label;
+    }
+
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        final JFileChooser fchooser = new JFileChooser(".");
+        int retvalue = fchooser.showSaveDialog((Component) board);
+        if (retvalue == JFileChooser.APPROVE_OPTION) {
+            File f = fchooser.getSelectedFile();
+            board.setLabelText(f.getAbsolutePath(), label);
+        }
+    }
+}
