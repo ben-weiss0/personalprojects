@@ -1,0 +1,63 @@
+package imageprocessor.model;
+
+import imageprocessor.model.operations.Operations;
+
+/**
+ * Represents an {@code ImageImpl}, which implements from the {@code IImage} interface. An image
+ * is represented by a 2D array of {@code IPixel}s.
+ */
+public class ImageImpl implements IImage {
+  private final IPixel[][] pixels;
+
+  /**
+   * Constructor for an {@code ImageImpl} that takes in a non-null 2D array of pixels, which
+   * together compose an image. Invariant note: we can verify all pixels will be valid pixels
+   * because whenever we call this constructor, we have created a set of valid pixels.
+   *
+   * @param pixels a 2D array composed of {@code IPixel}s
+   * @throws IllegalArgumentException when argument passed in is null or not all pixels have
+   *     the same maximum value
+   */
+  public ImageImpl(IPixel[][] pixels) throws IllegalArgumentException {
+    if (pixels == null) {
+      throw new IllegalArgumentException("2D array of pixels cannot be null.");
+    }
+    Integer maxVal = 0;
+    for (IPixel[] row : pixels) {
+      for (IPixel pixel : row) {
+        if (maxVal == 0) {
+          maxVal = pixel.getMaxValue();
+        }
+        else if (maxVal != pixel.getMaxValue()) {
+          throw new IllegalArgumentException("All pixels must have same max value");
+        }
+      }
+    }
+    this.pixels = pixels;
+  }
+
+  @Override
+  public int getRows() {
+    return this.pixels.length;
+  }
+
+  @Override
+  public int getColumns() {
+    return this.pixels[0].length;
+  }
+
+  @Override
+  public int getMaxValue() throws IllegalStateException {
+    return this.getPixelAt(0, 0).getMaxValue();
+  }
+
+  @Override
+  public IImage transform(Operations o) {
+    return o.apply(this);
+  }
+
+  @Override
+  public IPixel getPixelAt(int row, int col) {
+    return this.pixels[row][col];
+  }
+}
