@@ -1,0 +1,48 @@
+import imageprocessor.model.IImage;
+import imageprocessor.model.IPixel;
+import imageprocessor.model.operations.Operations;
+
+import java.awt.image.BufferedImage;
+
+/**
+ * Mock IImage for testing.
+ */
+public class MockIImage implements IImage {
+    StringBuilder log;
+
+    public MockIImage(BufferedImage img) {
+        log = new StringBuilder(img.toString());
+    }
+
+    @Override
+    public IImage transform(Operations operations) {
+        return null;
+    }
+
+    @Override
+    public IPixel getPixelAt(int row, int col) {
+        return null;
+    }
+
+    @Override
+    public int getRows() {
+        return 0;
+    }
+
+    @Override
+    public int getColumns() {
+        return 0;
+    }
+
+    @Override
+    public int getMaxValue() throws IllegalStateException {
+        return 0;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("Refreshed IImage to be greyscaled blue");
+        return builder.toString();
+    }
+}
