@@ -1,0 +1,40 @@
+package imageprocessor.controller.commanddesign.filemanipulation.fileconversion;
+
+import imageprocessor.model.IImage;
+
+import java.awt.image.BufferedImage;
+
+/**
+ * An interface to convert between files, buffered images, and backend IImages.
+ */
+public interface FileImageConversion {
+
+    /**
+     * From a file to a buffered image.
+     * @param fileName the path to the file.
+     * @return the Buffered image.
+     */
+    BufferedImage fileToBufferedImage(String fileName);
+
+    /**
+     * From a backend IImage to a buffered image.
+     * @param iimage the backend IImage
+     * @return the Buffered image.
+     */
+    BufferedImage iImageToBufferedImage(IImage iimage);
+
+    /**
+     * From a file to a backend IImage.
+     * @param fileName the path to the file.
+     * @return the IImage
+     */
+    IImage fileToIImage(String fileName);
+
+    /**
+     * From a buffered image to a backend IImage.
+     * @param img the buffered image
+     * @return the IImage.
+     */
+    IImage bufferedToIImage(BufferedImage img);
+
+}
