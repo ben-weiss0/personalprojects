@@ -1,0 +1,76 @@
+package imageprocessor.model.operations;
+
+import imageprocessor.MathExt;
+import imageprocessor.model.IImage;
+import imageprocessor.model.IPixel;
+import imageprocessor.model.ImageImpl;
+import imageprocessor.model.PixelImpl;
+
+/**
+ * Represents operations for an {@code AFilter} to be able to apply changes across an entire image.
+ */
+public abstract class AbstractFilter implements Operations {
+
+  private IPixel[] getCubicle(int size, IImage image, int row, int col) {
+    IPixel[] cubicle = new IPixel[size * size];
+    int minRow = row - (size / 2);
+    int minCol = col - (size / 2);
+
+    int idx = 0;
+    for (int i = 0; i < size; i++) {
+      for (int j = 0; j < size; j++) {
+        try {
+          cubicle[idx] = image.getPixelAt(minRow + i, minCol + j);
+        }
+        // Null spots will be the same color as middle pixel
+        catch (IndexOutOfBoundsException e) {
+          cubicle[idx] = new PixelImpl.PixelBuilder()
+                  .red(image.getPixelAt(row, col).getRed())
+                  .green(image.getPixelAt(row, col).getGreen())
+                  .blue(image.getPixelAt(row, col).getBlue())
+                  .alpha(image.getPixelAt(row, col).getAlpha())
+                  .build();
+        }
+        idx++;
+      }
+    }
+    return cubicle;
+  }
+
+  /**
+   * Applies a kernel on an image.
+   * @param image the function argument
+   * @return the image after being transformed
+   */
+  @Override
+  public IImage apply(IImage image) {
+    IPixel[][] newImage = new IPixel[image.getRows()][image.getColumns()];
+
+    double[] kernelMatrix = this.generateKernel();
+
+    // INVARIANT : kernelMatrix's length is always a square number
+    for (int row = 0; row < image.getRows(); row++) {
+      for (int col = 0; col < image.getColumns(); col++) {
+        IPixel[] pixels = getCubicle((int) Math.sqrt(kernelMatrix.length), image, row, col);
+        double[] redPixels = new double[kernelMatrix.length];
+        double[] greenPixels = new double[kernelMatrix.length];
+        double[] bluePixels = new double[kernelMatrix.length];
+        for (int i = 0; i < pixels.length; i++) {
+          redPixels[i] = pixels[i].getRed();
+          greenPixels[i] = pixels[i].getGreen();
+          bluePixels[i] = pixels[i].getBlue();
+          double redValue = MathExt.dot(kernelMatrix, redPixels);
+          double greenValue = MathExt.dot(kernelMatrix, greenPixels);
+          double blueValue = MathExt.dot(kernelMatrix, bluePixels);
+          double[] pixelArr = new double[] {redValue, greenValue, blueValue};
+          newImage[row][col] = new PixelImpl.PixelBuilder()
+                  .array(pixelArr)
+                  .build();
+        }
+      }
+    }
+    return new ImageImpl(newImage);
+  }
+
+  protected abstract double[] generateKernel();
+}
