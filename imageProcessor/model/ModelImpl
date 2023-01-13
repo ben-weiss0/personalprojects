@@ -1,0 +1,40 @@
+package imageprocessor.model;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import imageprocessor.model.operations.Operations;
+
+/**
+ * Storage system where a Map maps from strings (references) to Images.
+ */
+public class ModelImpl implements ImageProcessingModel {
+
+  private Map<String, IImage> storedImages;
+
+  /**
+   * Creates a storage model with no currently stored images.
+   */
+  public ModelImpl() {
+    this.storedImages = new HashMap<String, IImage>();
+  }
+
+  @Override
+  public IImage getImageFrom(String src) {
+    return this.storedImages.get(src);
+  }
+
+  @Override
+  public void add(String src, IImage img) {
+    this.storedImages.put(src, img);
+  }
+
+  @Override
+  public void transform(Operations functionObj, String src, String dest) {
+    IImage img = this.storedImages.get(src).transform(functionObj);
+    this.storedImages.put(dest, img);
+  }
+
+}
+
+
