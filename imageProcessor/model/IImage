@@ -1,0 +1,47 @@
+package imageprocessor.model;
+
+import imageprocessor.model.operations.Operations;
+
+/**
+ * Interface representing an Image.
+ */
+public interface IImage {
+
+  /**
+   * Transform an image based on a function object.
+   * @param operations a function object that represents the operation we will do on this
+   *                   image to return the transformed one.
+   * @return the transformed image.
+   */
+  IImage transform(Operations operations);
+
+  /**
+   * Returns the pixel at a provided row and column. It is fine that we return the pixel itself
+   * because all pixel fields are final and thus cannot a pixel cannot be modified.
+   * @param row the row of the pixel in our 2D array.
+   * @param col the column of the pixel in our 2D array.
+   * @return the pixel at the provided (row, column).
+   */
+  IPixel getPixelAt(int row, int col);
+
+  /**
+   * Gives the number of rows in the 2D array of pixels.
+   *
+   * @return number of rows in 2D array of pixels as an integer
+   */
+  int getRows();
+
+  /**
+   * Gives the number of columns in the 2D array of pixels.
+   *
+   * @return number of columns in 2D array of pixels as an integer
+   */
+  int getColumns();
+
+  /**
+   * Gets the maximum value for all pixels in the image.
+   * @return the maximum value of each pixel
+   * @throws IllegalStateException if the pixels don't all have the same maximum value.
+   */
+  int getMaxValue() throws IllegalStateException;
+}
