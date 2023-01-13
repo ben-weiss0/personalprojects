@@ -1,0 +1,21 @@
+package imageprocessor.model.operations.pixel;
+import imageprocessor.MathExt;
+import imageprocessor.model.IPixel;
+import imageprocessor.model.PixelImpl;
+
+public abstract class PixelTransform implements PixelOperations {
+  @Override
+  public IPixel apply(IPixel pixel) {
+    double[][] transformationMatrix = getTransformationMatrix(pixel);
+    double[] pixelArray = new double[]{ pixel.getRed(), pixel.getGreen(), pixel.getBlue() };
+
+    double[] newPixel = MathExt.matrixMultiply(transformationMatrix, pixelArray);
+    return new PixelImpl.PixelBuilder()
+            .array(newPixel)
+            .alpha(pixel.getAlpha())
+            .build();
+  }
+
+  abstract protected double[][] getTransformationMatrix(IPixel pixel);
+
+}
