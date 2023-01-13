@@ -1,0 +1,23 @@
+package imageprocessor.controller.listeners;
+
+import imageprocessor.model.operations.Operations;
+import imageprocessor.model.operations.Sepia;
+import imageprocessor.view.ViewForGUI;
+
+/**
+ * Action listener for sepia button.
+ */
+public class SepiaActionListener extends AbstractTransformationListener {
+    /**
+     * Constructor.
+     * @param board the working view.
+     */
+    public SepiaActionListener(ViewForGUI board) {
+        super(board);
+    }
+
+    @Override
+    protected Operations getCommand() {
+        return new Sepia();
+    }
+}
