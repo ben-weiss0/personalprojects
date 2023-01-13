@@ -1,0 +1,29 @@
+package imageprocessor.controller.commanddesign.filemanipulation.loadfiletypes;
+
+import imageprocessor.controller.commanddesign.filemanipulation.fileconversion.BMPFileConversion;
+import imageprocessor.controller.commanddesign.filemanipulation.fileconversion.FileImageConversion;
+import imageprocessor.controller.commanddesign.filemanipulation.fileconversion.JPGFileConversion;
+import imageprocessor.model.IImage;
+import imageprocessor.model.ImageProcessingModel;
+
+import java.awt.image.BufferedImage;
+
+/**
+ * Represents a {@code JPGLoad}, which allows for the client to load JPG files directly into
+ * the model from their own computer.
+ */
+public class JPGLoad extends AbstractLoad {
+  /**
+   * Loads a JPG photo to a location in the storage system.
+   * @param file JPG file we are loading
+   * @param reference key in our storage
+   */
+  public JPGLoad(String file, String reference) {
+    super(file, reference);
+  }
+
+  @Override
+  protected FileImageConversion getConverter() {
+    return new JPGFileConversion();
+  }
+}
