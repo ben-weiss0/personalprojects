@@ -1,0 +1,15 @@
+package imageprocessor.controller.commanddesign.filemanipulation.loadfiletypes;
+
+import imageprocessor.model.ImageProcessingModel;
+
+/**
+ * An interface that gives clients the ability to take images from their computers and store them
+ * in the model of this program.
+ */
+public interface FileLoad {
+  /**
+   * Saves an image from the local model to the client's computer.
+   * @param model an {@code ImageProcessingModel} that contains stored images
+   */
+  void apply(ImageProcessingModel model);
+}
