@@ -1,0 +1,33 @@
+package imageprocessor.model.operations;
+
+import imageprocessor.model.IImage;
+import imageprocessor.model.IPixel;
+import imageprocessor.model.ImageImpl;
+import imageprocessor.model.operations.pixel.PixelOperations;
+
+/**
+ * Function object when we apply the exact same thing to each pixel on screen.
+ */
+public class FullImageOperation implements Operations {
+
+  private PixelOperations o;
+
+  /**
+   * Constructor.
+   * @param o pixel function object we apply to every pixel in an image.
+   */
+  FullImageOperation(PixelOperations o) {
+    this.o = o;
+  }
+
+  @Override
+  public IImage apply(IImage image) {
+    IPixel[][] newImage = new IPixel[image.getRows()][image.getColumns()];
+    for (int row = 0; row < image.getRows(); row++) {
+      for (int col = 0; col < image.getColumns(); col++) {
+        newImage[row][col] = o.apply(image.getPixelAt(row, col));
+      }
+    }
+    return new ImageImpl(newImage);
+  }
+}
