@@ -1,0 +1,60 @@
+package imageprocessor.model;
+
+/**
+ * Represents an {@code IPixel} interface that extends the {@code IVisual} interface. Contains
+ * several methods that allow for information gathering from the {@code IPixel}. Also has several
+ * methods that allow for modification, which are called recursively to modify images, which are
+ * composed entirely of pixels.
+ */
+public interface IPixel {
+
+  /**
+   * Gets the maximum value of the red, green, and blue components.
+   * @return the value of the pixel as an integer.
+   */
+  int getValue();
+
+  /**
+   * Returns the intensity of a {@code PixelImpl}, which is the average of the 3 fields displayed
+   * as an integer.
+   *
+   * @return the average of the {@code PixelImpl} fields as an integer
+   */
+  int getIntensity();
+
+  /**
+   * Returns the luma of a {@code PixelImpl}, which is a weighted sum that is calculated using an
+   * equation. The formula is 0.2126r + 0.7152g + 0.0722b. A decision we made is that if this
+   * becomes a non-integer value, round it down.
+   *
+   * @return the luma of a {@code PixelImpl} as an integer using formula
+   */
+  int getLuma();
+
+  /**
+   * Gets the red component of a pixel.
+   * @return the red component of the pixel.
+   */
+  int getRed();
+
+  /**
+   * Gets the green component of a pixel.
+   * @return the green component of the pixel.
+   */
+  int getGreen();
+
+
+  /**
+   * Gets the blue component of a pixel.
+   * @return the blue component of the pixel.
+   */
+  int getBlue();
+
+  /**
+   * Gets the maximum value for a component for this pixel.
+   * @return the maximum value
+   */
+  int getMaxValue();
+
+  int getAlpha();
+}
