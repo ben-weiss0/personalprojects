@@ -1,0 +1,14 @@
+package imageprocessor.model.operations.pixel;
+
+import imageprocessor.model.IPixel;
+
+/**
+ * Pixel function object to greyscale by intensity.
+ */
+public class PixelGreyscaleIntensity extends PixelTransform {
+
+  @Override
+  protected double[][] getTransformationMatrix(IPixel pixel) {
+    return new double[][] { {.333, .333, .333}, {.333, .333, .333}, {.333, .333, .333} };
+  }
+}
